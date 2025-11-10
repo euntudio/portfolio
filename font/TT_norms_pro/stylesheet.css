@@ -1,0 +1,132 @@
+@font-face {
+    font-family: 'TT-Norms-Pro-Exp';
+    src: url('TTNormsProExp-Rg.eot');
+    src: url('TTNormsProExp-Rg.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsProExp-Rg.woff2') format('woff2'),
+        url('TTNormsProExp-Rg.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro-Exp';
+    src: url('TTNormsProExp-XBd.eot');
+    src: url('TTNormsProExp-XBd.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsProExp-XBd.woff2') format('woff2'),
+        url('TTNormsProExp-XBd.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro-Exp';
+    src: url('TTNormsProExp-Md.eot');
+    src: url('TTNormsProExp-Md.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsProExp-Md.woff2') format('woff2'),
+        url('TTNormsProExp-Md.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro-Exp';
+    src: url('TTNormsProExp-Blk.eot');
+    src: url('TTNormsProExp-Blk.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsProExp-Blk.woff2') format('woff2'),
+        url('TTNormsProExp-Blk.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro-Exp';
+    src: url('TTNormsProExp-XBlk.eot');
+    src: url('TTNormsProExp-XBlk.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsProExp-XBlk.woff2') format('woff2'),
+        url('TTNormsProExp-XBlk.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro-Exp';
+    src: url('TTNormsProExp-Bd.eot');
+    src: url('TTNormsProExp-Bd.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsProExp-Bd.woff2') format('woff2'),
+        url('TTNormsProExp-Bd.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro';
+    src: url('TTNormsPro-Rg.eot');
+    src: url('TTNormsPro-Rg.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsPro-Rg.woff2') format('woff2'),
+        url('TTNormsPro-Rg.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro';
+    src: url('TTNormsPro-Md.eot');
+    src: url('TTNormsPro-Md.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsPro-Md.woff2') format('woff2'),
+        url('TTNormsPro-Md.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro';
+    src: url('TTNormsPro-Blk.eot');
+    src: url('TTNormsPro-Blk.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsPro-Blk.woff2') format('woff2'),
+        url('TTNormsPro-Blk.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro-ExtraBlack';
+    src: url('TTNormsPro-XBlk.eot');
+    src: url('TTNormsPro-XBlk.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsPro-XBlk.woff2') format('woff2'),
+        url('TTNormsPro-XBlk.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro';
+    src: url('TTNormsPro-XBd.eot');
+    src: url('TTNormsPro-XBd.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsPro-XBd.woff2') format('woff2'),
+        url('TTNormsPro-XBd.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'TT-Norms-Pro';
+    src: url('TTNormsPro-Bd.eot');
+    src: url('TTNormsPro-Bd.eot?#iefix') format('embedded-opentype'),
+        url('TTNormsPro-Bd.woff2') format('woff2'),
+        url('TTNormsPro-Bd.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
