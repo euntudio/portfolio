@@ -14,9 +14,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-            /* ===============================
-               TOP TITLE 마우스 그라데이션
-            =============================== */
+               //TOP TITLE 마우스 그라데이션
             const title = document.querySelector(".top_title");
             if (title) {
                 title.addEventListener("mousemove", (e) => {
@@ -32,9 +30,7 @@
                 });
             }
 
-            /* ===============================
-               토끼 눈동자
-            =============================== */
+            //토끼 눈동자
             const svg = document.querySelector(".bunny-eyes");
             if (svg) {
                 const mouse = svg.createSVGPoint();
@@ -119,14 +115,11 @@
                 }
             }
 
-            /* ===============================
-               HOME 폴더 / 이미지 아이콘 드래그
-            =============================== */
+            //폴더
             $(function () {
                 const $wrap = $("#home");
                 const dragThreshold = 6;
 
-                // 폴더
                 $(".folder-item").each(function () {
                     const $item = $(this);
                     const $toggle = $item.find(".folder-toggle");
@@ -258,9 +251,7 @@
                 });
             });
 
-            /* ===============================
-               ABOUT TEXT 애니메이션
-            =============================== */
+            //어바웃미 텍스트
             if (window.SplitText) {
                 new SplitText(".about-text[split-lines]", {
                     type: "lines",
@@ -296,6 +287,7 @@
                     .to(".about-down", { opacity: 1, duration: 0.4 }, ">");
             });
 
+            
         });
     </script>
 
@@ -1064,7 +1056,6 @@
                             </div>
                         </div>
                     </div><!-- .project-box -->
-
                 </div><!-- .clone-project-inner -->
             </section>
 
