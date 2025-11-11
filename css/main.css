@@ -77,7 +77,11 @@ body {
 }
 
 .header .inner .nav .gnb li:hover {
-    font-weight: 500;
+    font-weight: bold;
+}
+
+.header .inner .nav .gnb li.active {
+    font-weight: bold;
 }
 
 .header .inner .icons {
@@ -604,6 +608,16 @@ body {
     gap: 10px;
 }
 
+.profile-meta li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-meta li img {
+    width: 20px;
+}
+
 .btn-profile-pdf {
     font-family: 'TT-Norms-Pro';
     display: flex;
@@ -619,7 +633,11 @@ body {
     text-decoration: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
     transition: all 0.2s ease;
+    animation-name: jelly;
+    animation-duration: 2s;
+    animation-duration: leaner;
 }
+
 
 .btn-profile-pdf:hover {
     background: #f0f0f0;
@@ -1164,7 +1182,7 @@ body {
 .contact_me {
     font-family: 'TT-Norms-Pro';
     margin: 0 auto;
-    padding: 100px 0;
+    padding: 150px 0;
     height: 100vh;
 }
 
@@ -1335,6 +1353,7 @@ input#open {
     padding: 15px 30px;
     border-radius: 10px;
 }
+
 .text_wrap li .box:hover {
     background-color: #bee5ff;
 }
@@ -1372,4 +1391,18 @@ input#open {
     background: rgba(255, 255, 255, 0.5);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     padding: 10px 30px;
+}
+
+@keyframes jelly {
+    25% {
+        transform: scale(0.9, 1.1);
+    }
+
+    50% {
+        transform: scale(1.1, 0.9);
+    }
+
+    75% {
+        transform: scale(0.95, 1.05);
+    }
 }
