@@ -1144,7 +1144,6 @@ body {
     flex-basis: 1;
     position: relative;
     z-index: 2;
-    mix-blend-mode: difference;
 }
 
 .project-overlay {
@@ -1171,7 +1170,7 @@ body {
 
 .contact_me .contact_title {
     font-family: 'TT-Norms-Pro-Exp';
-    font-size: 36px;
+    font-size: 48px;
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -1335,6 +1334,9 @@ input#open {
     border: 1px solid #363636;
     padding: 15px 30px;
     border-radius: 10px;
+}
+.text_wrap li .box:hover {
+    background-color: #bee5ff;
 }
 
 .copyright {
