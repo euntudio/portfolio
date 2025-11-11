@@ -451,7 +451,7 @@ body {
 }
 
 .about-hover-left .about-img {
-    left: 0;
+    left: -10px;
 }
 
 .about-hover-left.unhover {
@@ -465,7 +465,7 @@ body {
 }
 
 .about-hover-right .about-img {
-    right: 0;
+    right: -10px;
 }
 
 .about-hover-right.unhover {
@@ -708,7 +708,7 @@ body {
     font-family: 'TT-Norms-Pro-Exp';
     font-weight: bold;
     font-size: 48px;
-    padding: 60px 50px;
+    padding: 60px;
 }
 
 /* 왼쪽 리스트 */
@@ -781,15 +781,15 @@ body {
     transform: translateY(0);
     pointer-events: auto;
     z-index: 1;
-    margin-top: 0;       /* 여기 margin-top, padding-top 빼줘야 튀지 않아 */
-    padding-top: 44px;   /* 필요한 여백만 유지 */
+    margin-top: 50px;
+    padding: 20px;
     transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
 
 .project-panel.is-show .project-meta .project-label {
     font-family: 'TT-Norms-Pro-Exp';
-    font-size: 32px;
+    font-size: 26px;
     font-weight: bold;
     color: #828282;
     margin-bottom: 10px;
@@ -813,6 +813,7 @@ body {
     font-size: 18px;
     line-height: 1.5;
     margin-bottom: 15px;
+    color: #363636;
 }
 
 .project-panel.is-show .project-meta .project-desc-02 {
@@ -978,7 +979,7 @@ body {
 /* 텍스트 영역 스타일 */
 #clone_project .project-panel.is-show .project-meta .project-label {
     font-family: 'TT-Norms-Pro-Exp';
-    font-size: 32px;
+    font-size: 26px;
     font-weight: bold;
     color: #828282;
     margin-bottom: 10px;
@@ -1003,7 +1004,6 @@ body {
     font-size: 18px;
     line-height: 1.5;
     margin-bottom: 15px;
-    color: #555;
 }
 
 #clone_project .project-panel.is-show .project-meta .project-info {
@@ -1044,7 +1044,6 @@ body {
     align-items: center;
     gap: 8px;
 }
-
 
 #clone_project .project-mockup {
     width: 700px;

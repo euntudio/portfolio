@@ -331,6 +331,7 @@
                 });
 
                 // 사이드 메뉴 클릭 시: 이 섹션의 ScrollTrigger 구간 안에서 해당 패널 위치로 스크롤
+                // 사이드 메뉴 클릭 시 해당 패널 구간으로 스크롤
                 items.forEach((item, i) => {
                     item.addEventListener("click", (e) => {
                         e.preventDefault();
@@ -338,11 +339,16 @@
                         const start = st.start;
                         const end = st.end;
                         const slice = (end - start) / total;
-                        const target = start + slice * i + slice * 0.3; // 구간 안 중간쯤
+
+                        // 마지막 패널은 end 근처까지 가도록 보정
+                        const target =
+                            i === total - 1
+                                ? end - window.innerHeight * 0.05 // 거의 끝까지
+                                : start + slice * i + slice * 0.3;
 
                         gsap.to(window, {
                             scrollTo: target,
-                            duration: 0.6,
+                            duration: 0.8,
                             ease: "power2.inOut",
                         });
                     });
@@ -1039,7 +1045,7 @@
                                     생활금융 플랫폼 머니트리의 홈페이지를 클론 디자인하였습니다.
                                 </p>
                                 <p class="project-desc-02">
-                                    머디트리 웹사이트를 클론 디자인하며 컴포넌트와 베리언트를 활용해 UI 구조의<br />
+                                    머니트리 웹사이트를 클론 디자인하며 컴포넌트와 베리언트를 활용해 UI 구조의<br />
                                     일관성과 재사용성을 높이는 방법을 익혔습니다. 또한 오토레이아웃을 설정할 때<br />
                                     요소 간 우선순위를 고려해 그룹을 체계적으로 구성했습니다.<br />
                                     그리고 가독성을 높이는 폰트 크기와 여백 설계의 중요성을 이해하게 되었습니다.
