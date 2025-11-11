@@ -11,9 +11,14 @@ body {
 
 /* 헤더 영역 */
 .header {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
     height: 20vh;
     padding: 15px 0;
     border-bottom: 1px solid #D9D9D9;
+    z-index: 999;
 }
 
 .header .top_title {
@@ -96,7 +101,7 @@ body {
 /* HOME 메인 비주얼 영역 */
 .home {
     width: 100%;
-    height: 80vh;
+    height: 100vh;
     position: relative;
     display: flex;
     justify-content: center;
@@ -106,7 +111,7 @@ body {
 .bunny-visual {
     position: relative;
     margin: 0 auto;
-    padding-top: 90px;
+    padding-top: 280px;
     width: 1015px;
 }
 
@@ -138,6 +143,7 @@ body {
 .folder-icons {
     font-family: 'TT-Norms-Pro';
     position: absolute;
+    margin-top: 213px;
     inset: 0;
 }
 
@@ -524,16 +530,22 @@ body {
     color: #363636;
 }
 
+.about-me-inner {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    padding: 50px 0;
+}
+
 .about-me-title {
     font-size: 40px;
     font-weight: bold;
     margin-left: 150px;
-    margin-bottom: 50px;
 }
 
-.about-me-inner {
+.about-me-wrap {
     max-width: 1440px;
-    height: 100vh;
     margin: 0 auto;
     display: flex;
     column-gap: 80px;
@@ -548,8 +560,8 @@ body {
 }
 
 .profile-photo {
-    width: 435px;
-    height: 580px;
+    width: 339px;
+    height: 452px;
     border-radius: 10px;
     background: #f5f5f5;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
@@ -599,7 +611,7 @@ body {
     justify-content: center;
     gap: 4px;
     padding: 15px;
-    font-size: 22px;
+    font-size: 20px;
     border-radius: 10px;
     border: 1px solid #ddd;
     background: #fff;
@@ -732,7 +744,7 @@ body {
     font-size: 20px;
 }
 
-.project-list {
+#main_project .project-list {
     font-size: 20px;
     display: flex;
     flex-direction: column;
@@ -757,17 +769,20 @@ body {
 
 /* 오른쪽 고정 박스 */
 .project-box {
+    border-radius: 0 30px 30px 0;
     width: 1520px;
     background: #fff;
     position: relative;
-    height: 830px;
+    height: 800px;
+    OVERFLOW: hidden;
 }
 
 .project-panel {
     position: absolute;
     inset: 40px;
     opacity: 0;
-    transform: translateY(20px); /* 살짝 아래에서 시작 */
+    transform: translateY(20px);
+    /* 살짝 아래에서 시작 */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -781,8 +796,10 @@ body {
     transform: translateY(0);
     pointer-events: auto;
     z-index: 1;
-    margin-top: 50px;
+    margin-top: 100px;
     padding: 20px;
+    display: flex;
+    align-items: flex-start;
     transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
@@ -867,6 +884,8 @@ body {
     width: 700px;
 }
 
+.project-mockup .monitor .monitor-screen {}
+
 .project-mockup .monitor .monitor-screen img {
     width: 100%;
     height: 100%;
@@ -946,10 +965,11 @@ body {
 
 /* RIGHT : 고정 박스 */
 #clone_project .project-box {
+    border-radius: 0 30px 30px 0;
     width: 1520px;
     background: #fff;
     position: relative;
-    height: 830px;
+    height: 800px;
 }
 
 /* 패널(카드) 기본: 메인과 동일하게 겹쳐두기 */
@@ -971,8 +991,10 @@ body {
     transform: translateY(0);
     pointer-events: auto;
     z-index: 1;
-    margin-top: 0;
-    padding-top: 44px;  
+    margin-top: 100px;
+    padding-top: 44px;
+    display: flex;
+    align-items: flex-start;
     transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
@@ -1053,4 +1075,299 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+
+.graphic_design {
+    font-family: 'TT-Norms-Pro';
+    padding: 100px 0;
+}
+
+.graphic_title {
+    font-family: 'TT-Norms-Pro-Exp';
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    color: #363636;
+}
+
+.graphic_title h2 {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.graphic_title p {
+    font-size: 18px;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.project-title h1 {
+    color: #363636;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.project-categ {
+    font-weight: lighter;
+    color: #828282;
+}
+
+.cursor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    width: 800px;
+    aspect-ratio: 3 / 2;
+    background: url("img/Graphic design-01.jpg") no-repeat center / contain;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 2;
+}
+
+
+.wrapper {
+    width: 80%;
+    margin: 0 auto;
+    height: 100%;
+}
+
+.project {
+    border-bottom: 1px solid rgba(46, 40, 40, 0.2);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-basis: 1;
+    position: relative;
+    z-index: 2;
+    mix-blend-mode: difference;
+}
+
+.project-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
+
+.graphic_design .project {
+    padding: 30px 0;
+}
+
+.contact_me {
+    font-family: 'TT-Norms-Pro';
+    margin: 0 auto;
+    padding: 100px 0;
+    height: 100vh;
+}
+
+.contact_me .contact_title {
+    font-family: 'TT-Norms-Pro-Exp';
+    font-size: 36px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 100px;
+}
+
+/* footer */
+.info_wrap {
+    width: 100%;
+    padding: 0 200px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+input#open {
+    display: none;
+}
+
+.github-card {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    transform-style: preserve-3d;
+    transform: perspective(2500px);
+    transition: 0.3s;
+}
+
+.card-front {
+    font-family: 'TT-Norms-Pro-Exp';
+    font-weight: bold;
+    position: relative;
+    background-color: #fff;
+    width: 300px;
+    height: 300px;
+    transform-origin: left;
+    box-shadow: inset 100px 20px 100px rgba(0, 0, 0, 0.15),
+        30px - 50px rgba(0, 0, 0, 0.3);
+    transition: 0.3s;
+    border-radius: 10px;
+}
+
+.card-front:before {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    background-color: #828282;
+    top: 10px;
+    left: 10px;
+    border-radius: 5px;
+}
+
+.card-inside {
+    font-family: 'TT-Norms-Pro';
+    position: absolute;
+    background-color: #ffffff;
+    width: 300px;
+    height: 300px;
+    z-index: -1;
+    left: 0;
+    top: 0;
+    box-shadow: inset 100px 20px 100px rgba(0, 0, 0, 0.22),
+        100px 20px 100px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.open {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    left: 0;
+    top: 0;
+    background-color: transparent;
+    z-index: 7;
+    cursor: pointer;
+}
+
+#open:checked~.card-front {
+    transform: rotateY(-155deg);
+    box-shadow: inset 100px 20px 100px rgba(0, 0, 0, 0.13),
+        30px 0 50px rgba(0, 0, 0, 0.1);
+}
+
+#open:checked~.card-front:before {
+    z-index: 5;
+    background-color: #ffffff;
+    width: 300px;
+    height: 300px;
+    top: 0;
+    left: 0;
+    box-shadow: inset 100px 20px 100px rgba(0, 0, 0, 0.1);
+}
+
+.note {
+    position: relative;
+    width: 200px;
+    height: 175px;
+    top: 75px;
+    left: 50px;
+    color: #333;
+    background-color: #ffffff;
+    font-size: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.note:before,
+.note:after {
+    content: "";
+    position: absolute;
+    background-color: #363636;
+    width: 40px;
+    height: 40px;
+}
+
+.note:before {
+    transform: rotate(-45deg);
+    top: -20px;
+    left: 80px;
+}
+
+.note:after {
+    border-radius: 50%;
+    top: -35px;
+    left: 65px;
+    box-shadow: 30px 0 #363636;
+}
+
+.text-one {
+    position: absolute;
+    color: #333;
+    font-size: 18px;
+    top: 30px;
+    width: 300px;
+    text-align: center;
+}
+
+.text_wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.text_wrap li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 36px;
+    font-weight: 500;
+}
+
+.text_wrap li .box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #363636;
+    padding: 15px 30px;
+    border-radius: 10px;
+}
+
+.copyright {
+    width: 100%;
+    line-height: 1.3;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-end;
+    padding: 0 200px;
+    margin-top: 200px;
+}
+
+/* 상단 고정 내비게이션 (main_project 이후) */
+.nav-fixed {
+    width: 100%;
+    position: fixed;
+    top: 20px;
+    /* 위 여백 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 고정됐을 때 gnb 스타일 다듬기 */
+.nav-fixed .gnb {
+    border-radius: 30px;
+    border: 1px solid #D9D9D9;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 10px 30px;
 }
