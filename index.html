@@ -14,7 +14,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-               //TOP TITLE 마우스 그라데이션
+            //TOP TITLE 마우스 그라데이션
             const title = document.querySelector(".top_title");
             if (title) {
                 title.addEventListener("mousemove", (e) => {
@@ -282,13 +282,77 @@
                             stagger: 0.1,
                             duration: 1.2,
                         },
-                    "<0.4"
+                        "<0.4"
                     )
                     .to(".about-down", { opacity: 1, duration: 0.4 }, ">");
             });
 
-            
+            function initProjectSection(sectionId, pinInnerSelector) {
+                const section = document.querySelector(sectionId);
+                if (!section) return;
+
+                const pinTarget = section.querySelector(pinInnerSelector);
+                const panels = section.querySelectorAll(".project-box .project-panel");
+                const items = section.querySelectorAll(".project-sidebar .project-item");
+
+                if (!pinTarget || panels.length === 0) return;
+
+                const total = panels.length;
+
+                // 패널/메뉴 활성화
+                function setActive(index) {
+                    panels.forEach((panel, i) => {
+                        panel.classList.toggle("is-show", i === index);
+                    });
+                    items.forEach((item, i) => {
+                        item.classList.toggle("is-active", i === index);
+                    });
+                }
+
+                setActive(0);
+
+                // 섹션 고정 + 스크롤 진행도에 따라 패널 전환
+                const st = ScrollTrigger.create({
+                    trigger: section,
+                    start: "top top",
+                    end: "+=" + (total * window.innerHeight * 1.2),
+                    pin: pinTarget,
+                    pinSpacing: true,
+                    scrub: true,
+                    anticipatePin: 1,
+                    onUpdate: (self) => {
+                        // 패널 개수에 맞춰 계단처럼 스냅
+                        let idx = Math.round(self.progress * (total - 1));
+                        idx = Math.max(0, Math.min(idx, total - 1));
+                        setActive(idx);
+                    },
+                    onLeave: () => setActive(total - 1),
+                    onLeaveBack: () => setActive(0),
+                });
+
+                // 사이드 메뉴 클릭 시: 이 섹션의 ScrollTrigger 구간 안에서 해당 패널 위치로 스크롤
+                items.forEach((item, i) => {
+                    item.addEventListener("click", (e) => {
+                        e.preventDefault();
+
+                        const start = st.start;
+                        const end = st.end;
+                        const slice = (end - start) / total;
+                        const target = start + slice * i + slice * 0.3; // 구간 안 중간쯤
+
+                        gsap.to(window, {
+                            scrollTo: target,
+                            duration: 0.6,
+                            ease: "power2.inOut",
+                        });
+                    });
+                });
+            }
+            initProjectSection("#main_project", ".main-project-inner");
+            initProjectSection("#clone_project", ".clone-project-inner");
+
         });
+
     </script>
 
 </head>
@@ -806,7 +870,8 @@
                             <div class="project-meta">
                                 <p class="project-label">APP 02</p>
                                 <h2 class="project-title">MCDONALD (KR)</h2>
-                                <p class="project-tag">#CLONE CODING</p>
+                                <p class="project-tag">
+                                    #HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;JAVASCRIPT&nbsp;&nbsp;#SWIPER-JS</p>
                                 <p class="project-desc-01">
                                     글로벌 패스트푸드 브랜드 맥도날드 앱을 리디자인하였습니다.
                                 </p>
@@ -828,16 +893,8 @@
                                     </ul>
                                 </div>
                                 <div class="project-buttons">
-                                    <a href="#" class="btn-project">WEB SITE
-                                        <img src="img/link-angled.svg" alt="">
-                                    </a>
-                                    <a href="#" class="btn-project">GITHUB
-                                        <img src="img/link-angled.svg" alt="">
-                                    </a>
+
                                     <a href="#" class="btn-project">PROCESS
-                                        <img src="img/link-angled.svg" alt="">
-                                    </a>
-                                    <a href="#" class="btn-project">FIGMA
                                         <img src="img/link-angled.svg" alt="">
                                     </a>
                                     <a href="#" class="btn-project">I LEARNED
@@ -885,7 +942,7 @@
                             <div class="project-meta">
                                 <p class="project-label">WEB 01</p>
                                 <h2 class="project-title">SOCAR</h2>
-                                <p class="project-tag">#HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;JAVASCRIPT
+                                <p class="project-tag">#HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;#JAVASCRIPT
                                 </p>
                                 <p class="project-desc-01">
                                     국내 대표 카셰어링 플랫폼 쏘카의 반응형 홈페이지를 클론 코딩하여 제작했습니다.
@@ -1041,7 +1098,7 @@
                                     </ul>
                                 </div>
                                 <div class="project-buttons">
-                                    <a href="#" class="btn-project">view in detail
+                                    <a href="#" class="btn-project">VIEW IN DETAIL
                                         <img src="img/link-angled.svg" alt="">
                                     </a>
                                 </div>
@@ -1056,7 +1113,7 @@
                             </div>
                         </div>
                     </div><!-- .project-box -->
-                </div><!-- .clone-project-inner -->
+                </div><!-- #clone-project-inner -->
             </section>
 
 

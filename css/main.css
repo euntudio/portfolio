@@ -276,9 +276,7 @@ body {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 0;
-    /* 헤더/콘텐츠보다 뒤 */
-    overflow: visible;
+    z-index: -1;
 }
 
 /* 개별 발자국 */
@@ -294,10 +292,8 @@ body {
     width: 100%;
     height: 100%;
     opacity: 0.3;
-    /* 너무 튀지 않게 연하게 */
 }
 
-/* 위치 & 방향 (필요하면 숫자만 살짝 조정해서 원하는 경로 만들기) */
 .paw-bg .paw:nth-child(1) {
     top: 85%;
     left: 8%;
@@ -391,7 +387,7 @@ body {
 }
 
 .about {
-    width: 1266px;
+    width: 1440px;
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -690,15 +686,18 @@ body {
 /* 프로젝트 시작 */
 .main-project {
     font-family: 'TT-Norms-Pro';
+    position: relative;
     width: 100%;
-    height: 100vh;
+    min-height: 860px;
+    /* pinSpacing 작동 보장 */
     padding: 100px 42px;
     margin: 0 auto;
 }
 
 .main-project-inner {
-    height: 830px;
-    margin: 0 auto;
+    width: 100%;
+    height: 800px;
+    /* 고정되는 내부 박스만 1화면 크기 */
     display: flex;
     border-radius: 26px;
     box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
@@ -715,7 +714,7 @@ body {
 /* 왼쪽 리스트 */
 .project-sidebar {
     background: #e6e6e6;
-    height: 830px;
+    height: 800px;
     padding: 30px;
     display: flex;
     flex-direction: column;
@@ -764,28 +763,29 @@ body {
     height: 830px;
 }
 
-/* 박스 안의 패널들 (전환 핵심 부분) */
 .project-panel {
     position: absolute;
     inset: 40px;
     opacity: 0;
-    transform: scale(0.94);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(20px); /* 살짝 아래에서 시작 */
     display: flex;
     justify-content: space-between;
     align-items: center;
     pointer-events: none;
+    z-index: 0;
+    /* transition 제거! (숨을 때는 바로 숨기도록) */
 }
 
 .project-panel.is-show {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
     pointer-events: auto;
-    margin-top: 100px;
-    display: flex;
-    align-items: flex-start;
-    padding-top: 44px;
+    z-index: 1;
+    margin-top: 0;       /* 여기 margin-top, padding-top 빼줘야 튀지 않아 */
+    padding-top: 44px;   /* 필요한 여백만 유지 */
+    transition: opacity 0.45s ease, transform 0.45s ease;
 }
+
 
 .project-panel.is-show .project-meta .project-label {
     font-family: 'TT-Norms-Pro-Exp';
@@ -871,28 +871,28 @@ body {
     height: 100%;
 }
 
-.clone_project.clone-project {
+#clone_project.clone-project {
     font-family: 'TT-Norms-Pro';
+    position: relative;
     width: 100%;
-    height: 100vh;
+    min-height: 800px;
+    /* pinSpacing 작동 보장 */
     padding: 100px 42px;
     margin: 0 auto;
-    
 }
 
-/* 안쪽 래퍼 (핀되는 영역) */
-.clone_project .clone-project-inner {
-    height: 830px;
-    margin: 0 auto;
+#clone_project .clone-project-inner {
+    width: 100%;
+    height: 800px;
+    /* 고정되는 내부 박스만 1화면 크기 */
     display: flex;
     border-radius: 26px;
     box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    background: #fff;
 }
 
-/* 상단 큰 타이틀 (PROJECT / CLONE PROJECT) */
-.clone_project .project-sidebar-title {
+/* 상단 큰 타이틀 */
+#clone_project .project-sidebar-title {
     font-family: 'TT-Norms-Pro-Exp';
     font-weight: bold;
     font-size: 48px;
@@ -900,7 +900,7 @@ body {
 }
 
 /* LEFT : 사이드바 */
-.clone_project .project-sidebar {
+#clone_project .project-sidebar {
     background: #e6e6e6;
     height: 830px;
     padding: 30px;
@@ -909,25 +909,25 @@ body {
     gap: 30px;
 }
 
-.clone_project .project-folder {
+#clone_project .project-folder {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 110px;
 }
 
-.clone_project .project-folder-label {
+#clone_project .project-folder-label {
     font-size: 20px;
 }
 
-.clone_project .project-list {
+#clone_project .project-list {
     font-size: 20px;
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
 
-.clone_project .project-item {
+#clone_project .project-item {
     cursor: pointer;
     text-align: center;
     padding: 10px 12px;
@@ -936,47 +936,47 @@ body {
     color: #828282;
 }
 
-.clone_project .project-item:hover,
-.clone_project .project-item.is-active {
+#clone_project .project-item:hover,
+#clone_project .project-item.is-active {
     background: #D9D9D9;
     color: #363636;
     font-weight: bold;
 }
 
 /* RIGHT : 고정 박스 */
-.clone_project .project-box {
+#clone_project .project-box {
     width: 1520px;
     background: #fff;
     position: relative;
     height: 830px;
 }
 
-/* 패널(카드) 기본 상태: 겹쳐 두고 JS로 is-show 전환 */
-.clone_project .project-panel {
+/* 패널(카드) 기본: 메인과 동일하게 겹쳐두기 */
+#clone_project .project-panel {
     position: absolute;
     inset: 40px;
     opacity: 0;
-    transform: scale(0.94);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(20px);
     display: flex;
     justify-content: space-between;
     align-items: center;
     pointer-events: none;
+    z-index: 0;
 }
 
-/* 활성 패널: 메인과 동일하게 확대 + 위로 올리기 */
-.clone_project .project-panel.is-show {
+/* 활성 패널 */
+#clone_project .project-panel.is-show {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
     pointer-events: auto;
-    margin-top: 100px;
-    display: flex;
-    align-items: flex-start;
-    padding-top: 44px;
+    z-index: 1;
+    margin-top: 0;
+    padding-top: 44px;  
+    transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
-/* 텍스트 영역 상세 스타일 */
-.clone_project .project-panel.is-show .project-meta .project-label {
+/* 텍스트 영역 스타일 */
+#clone_project .project-panel.is-show .project-meta .project-label {
     font-family: 'TT-Norms-Pro-Exp';
     font-size: 32px;
     font-weight: bold;
@@ -984,14 +984,74 @@ body {
     margin-bottom: 10px;
 }
 
-.clone_project .project-panel.is-show .project-meta .project-title {
+#clone_project .project-panel.is-show .project-meta .project-title {
     font-family: 'TT-Norms-Pro-Exp';
     font-size: 36px;
     font-weight: bold;
     margin-bottom: 25px;
 }
 
-.clone_project .project-panel.is-show .project-meta .project-tag {
+#clone_project .project-panel.is-show .project-meta .project-tag {
     font-family: 'TT-Norms-Pro';
-    font-size: 2
+    font-size: 22px;
+    color: #828282;
+    margin-bottom: 30px;
+}
+
+#clone_project .project-panel.is-show .project-meta .project-desc-01,
+#clone_project .project-panel.is-show .project-meta .project-desc-02 {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+#clone_project .project-panel.is-show .project-meta .project-info {
+    font-family: 'TT-Norms-Pro';
+    font-size: 20px;
+    display: flex;
+    gap: 30px;
+    margin: 25px 0 32px;
+}
+
+#clone_project .project-panel.is-show .project-meta .project-info .info-title {
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#clone_project .project-panel.is-show .project-meta .project-info .info-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#clone_project .project-panel.is-show .project-meta .project-buttons {
+    font-family: 'TT-Norms-Pro-Exp';
+    font-weight: bold;
+    font-size: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+#clone_project .project-panel.is-show .project-meta .project-buttons .btn-project {
+    border: 1px solid #363636;
+    border-radius: 10px;
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+#clone_project .project-mockup {
+    width: 700px;
+}
+
+#clone_project .project-mockup .monitor .monitor-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
