@@ -927,6 +927,7 @@ body {
     bottom: 219px;
     /* 스탠드 시작 전에 끝나도록 */
     overflow: hidden;
+    z-index: -1;
 }
 
 /* 실제 디자인 시안 이미지 */
@@ -1151,6 +1152,7 @@ body {
     bottom: 219px;
     /* 스탠드 시작 전에 끝나도록 */
     overflow: hidden;
+    z-index: -1;
 }
 
 /* 실제 디자인 시안 이미지 */
@@ -1247,6 +1249,39 @@ body {
     display: flex;
     align-items: center;
 }
+
+/* GRAPHIC DESIGN - 팬시박스 트리거 전체 영역 */
+.graphic_design .project {
+    position: relative;
+    cursor: pointer;
+}
+
+.graphic_design .project-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    /* 제목/카테고리보다 위 */
+    pointer-events: auto;
+}
+
+.graphic_design .project-overlay a {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* 이거 꼭 추가 */
+    cursor: pointer;
+}
+
+
+
+.cursor {
+    pointer-events: none;
+}
+
+/* 커서는 클릭 막지 않게 */
+
 
 .graphic_design .project {
     padding: 30px 0;
@@ -1478,4 +1513,160 @@ input#open {
     75% {
         transform: scale(0.95, 1.05);
     }
+}
+
+/* 공통: 모든 디바이스 공용 기본값 */
+.device {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.device-frame {
+    width: 100%;
+    display: block;
+    pointer-events: none;
+}
+
+.device-screen {
+    position: absolute;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.device-screen img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transform: translateY(0);
+    transition: transform 20s ease-out;
+}
+
+/* AMUSE 전용 레이아웃 */
+.project-mockup.amuse-mockup {
+    display: flex;
+    align-items: flex-end;
+    gap: 32px;
+    width: 520px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.project-mockup.amuse-mockup .device-tablet {
+    width: 375px;
+}
+
+.project-mockup.amuse-mockup .device-tablet .device-screen {
+    left: 32px;
+    right: 32px;
+    top: 28px;
+    bottom: 30px;
+    z-index: -1;
+}
+
+.project-mockup.amuse-mockup .device-mobile {
+    width: 180px;
+}
+
+.project-mockup.amuse-mockup .device-mobile .device-screen {
+    left: 10px;
+    right: 10px;
+    top: 8px;
+    bottom: 8px;
+    z-index: -1;
+}
+
+/* AMUSE hover */
+.project-mockup.amuse-mockup .device:hover .device-screen img {
+    transform: translateY(-82%);
+}
+
+/* =========================
+   MAIN PROJECT : Multi Device (Desktop + Tablet + Mobile)
+   ========================= */
+
+.project-mockup.multi-device {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    bottom: 50px;
+}
+
+/* Desktop: 왼쪽 큰 모니터 */
+.project-mockup.multi-device .device-desktop {
+    width: 600px;
+    right: -15px;
+    bottom: 0;
+    position: absolute;
+}
+
+.project-mockup.multi-device .device-desktop .device-screen {
+    left: 21px;
+    /* desktop.png 안쪽에 맞춰서 */
+    right: 23px;
+    top: 20px;
+    bottom: 182px;
+    z-index: -1;
+}
+
+/* Tablet: 오른쪽 뒤쪽 */
+.project-mockup.multi-device .device-tablet {
+    width: 250px;
+    position: absolute;
+    left: -5px;
+    bottom: 0;
+    z-index: 2;
+}
+
+.project-mockup.multi-device .device-tablet .device-screen {
+    left: 8%;
+    right: 8%;
+    top: 17px;
+    bottom: 17px;
+    border-radius: 10px;
+    z-index: -1;
+}
+
+/* Mobile: 제일 앞쪽 */
+.project-mockup.multi-device .device-mobile {
+    width: 120px;
+    position: absolute;
+    left: 250px;
+    bottom: 5px;
+    z-index: 3;
+}
+
+.project-mockup.multi-device .device-mobile .device-screen {
+    left: 6px;
+    right: 7px;
+    top: 5px;
+    bottom: 6px;
+    border-radius: 15px;
+    z-index: -1;
+}
+
+/* hover 시 세 기기 화면 동시에 위로 스크롤 */
+.project-mockup.multi-device:hover .device:hover .device-screen img {
+    transform: translateY(-88%);
+}
+
+
+/* McDonald : static mobile mockups only */
+.project-mockup.mcdonald-mockup {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.project-mockup.mcdonald-mockup .mcd-mockup-item {
+    display: block;
+    height: 330px;
+    /* 전체 레이아웃 보면서 230~320px 사이에서 맞춰보기 */
+    width: auto;
+    object-fit: contain;
+}
+
+/* 호버 효과 X (혹시 공통 hover가 있다면 여기서 막기) */
+.project-mockup.mcdonald-mockup:hover .mcd-mockup-item {
+    transform: none;
 }

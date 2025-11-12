@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>jieun/portfolio</title>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/carousel.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+
+    <!-- JS -->
     <script src="lib/jquery-3.7.1.min.js"></script>
     <script src="lib/gsap.min.js"></script>
     <script src="lib/ScrollTrigger.min.js"></script>
@@ -438,7 +443,7 @@
                 $(".cursor").css({ "background-image": "url('img/Graphic design-04.jpg')" });
             });
             $(".p-4").hover(function () {
-                $(".cursor").css({ "background-image": "url('img/cardnews.png')" });
+                $(".cursor").css({ "background-image": "url('img/cardnews-01.png')" });
             });
             $(".p-5").hover(function () {
                 $(".cursor").css({ "background-image": "url('img/Graphic design-06.jpg')" });
@@ -545,20 +550,18 @@
                 scrollToSection(currentIndex + direction);
             }
 
-            // Observer: 휠/터치 입력을 "한 스텝" 단위로 처리
-            Observer.create({
+            // ✅ 이것만 유지
+            window.snapObserver = Observer.create({
                 type: "wheel,touch,pointer",
                 wheelSpeed: 1,
                 tolerance: 25,
-                preventDefault: true,  // 기본 스크롤 막고 우리가 전부 제어
-
-                onDown(self) {
-                    handleStep(1);   // 휠 내리면 다음 (섹션 or 패널)
-                },
-                onUp(self) {
-                    handleStep(-1);  // 휠 올리면 이전
-                },
+                preventDefault: true,
+                allowClicks: true,
+                ignore: ".fancybox__container, .fancybox__slide, .fancybox__thumbs",
+                onDown() { handleStep(1); },
+                onUp() { handleStep(-1); },
             });
+
 
             // 첫 로드 시 현재 섹션 인덱스 정렬
             window.addEventListener("load", () => {
@@ -590,6 +593,28 @@
             });
 
         });
+
+        //팬시박스
+        Fancybox.bind('[data-fancybox="project"]', {
+            Thumbs: { autoStart: true },     // 하단 썸네일 자동 표시
+            Toolbar: {
+                display: [
+                    "counter",                   // 좌상단 1/3
+                    "thumbs",                    // 썸네일 토글
+                    "zoom", "fullscreen", "download",
+                    "close"
+                ],
+            },
+            Carousel: { transition: "slide" },
+
+            // 팝업 동안 스냅 잠시 OFF, 닫히면 ON
+            on: {
+                init: () => window.snapObserver && window.snapObserver.disable(),
+                destroy: () => window.snapObserver && window.snapObserver.enable(),
+            },
+        });
+        // 스냅 마지막 섹션 재동기화
+        ScrollTrigger.refresh(true);
 
 
 
@@ -931,13 +956,21 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="project-mockup">
-                                <div class="monitor">
-                                    <img src="img/desktop.png" alt="">
-                                    <div class="monitor-screen">
-                                        <img src="img/desktop-coca.png" alt="Coca-Cola Main">
+                            <div class="project-mockup multi-device">
+                                <!-- Desktop -->
+                                <div class="device device-desktop">
+                                    <img src="img/desktop.png" alt="Coca-Cola Desktop" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/desktop-coca.png" alt="Coca-Cola Desktop Design">
                                     </div>
-                                    <div class="monitor-stand"></div>
+                                </div>
+
+                                <!-- Mobile -->
+                                <div class="device device-mobile">
+                                    <img src="img/mobile.png" alt="Coca-Cola Mobile" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/mobile-coca.png" alt="Coca-Cola Mobile Design">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -987,13 +1020,29 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="project-mockup">
-                                <div class="monitor">
-                                    <img src="img/desktop.png" alt="">
-                                    <div class="monitor-screen">
-                                        <img src="img/desktop-almang.png" alt="Coca-Cola Main">
+                            <div class="project-mockup multi-device">
+                                <!-- Desktop -->
+                                <div class="device device-desktop">
+                                    <img src="img/desktop.png" alt="Almang Desktop" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/desktop-almang.png" alt="Almang Desktop Design">
                                     </div>
-                                    <div class="monitor-stand"></div>
+                                </div>
+
+                                <!-- Tablet -->
+                                <div class="device device-tablet">
+                                    <img src="img/tablet.png" alt="Almang Tablet" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/tablet-almang.png" alt="Almang Tablet Design">
+                                    </div>
+                                </div>
+
+                                <!-- Mobile -->
+                                <div class="device device-mobile">
+                                    <img src="img/mobile.png" alt="Almang Mobile" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/mobile-almang.png" alt="Almang Mobile Design">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1102,13 +1151,21 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="project-mockup">
-                                <div class="monitor">
-                                    <img src="img/desktop.png" alt="">
-                                    <div class="monitor-screen">
-                                        <img src="img/desktop-swell.png" alt="Coca-Cola Main">
+                            <div class="project-mockup amuse-mockup">
+                                <!-- 태블릿 목업 -->
+                                <div class="device device-tablet">
+                                    <img src="img/tablet.png" alt="Amuse Tablet Mockup" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/tablet-amuse.png" alt="Amuse Tablet Design">
                                     </div>
-                                    <div class="monitor-stand"></div>
+                                </div>
+
+                                <!-- 모바일 목업 -->
+                                <div class="device device-mobile">
+                                    <img src="img/mobile.png" alt="Amuse Mobile Mockup" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/mobile-amuse.png" alt="Amuse Mobile Design">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1150,16 +1207,13 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="project-mockup">
-                                <div class="monitor">
-                                    <div class="monitor-screen">
-                                        <img src="img/desktop.png" alt="Coca-Cola Main">
-                                    </div>
-                                    <div class="monitor-stand"></div>
-                                </div>
+                            <div class="project-mockup mcdonald-mockup">
+                                <img src="img/mcdonald-01.png" alt="McDonald App Main" class="mcd-mockup-item">
+                                <img src="img/mcdonald-02.png" alt="McDonald App Coupon" class="mcd-mockup-item">
+                                <img src="img/mcdonald-03.png" alt="McDonald App Order" class="mcd-mockup-item">
+                                <img src="img/mcdonald-04.png" alt="McDonald App Detail" class="mcd-mockup-item">
                             </div>
                         </div>
-
                     </div><!-- .project-box -->
 
                 </div><!-- .main-project-inner -->
@@ -1382,56 +1436,105 @@
                                     <h1>Poster 01</h1>
                                 </div>
                                 <div class="project-categ">Illustrator</div>
-                                <div class="project-overlay"></div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/Graphic design-01.jpg" data-fancybox="project" data-caption="Shape Of Love">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
                             </div>
+
                             <div class="project p-2">
                                 <div class="project-title">
                                     <h1>Poster 02</h1>
                                 </div>
                                 <div class="project-categ">Illustrator</div>
-                                <div class="project-overlay"></div>
+                                <div class="project-overlay">
+                                    <a href="img/Graphic design-02.jpg" data-fancybox="project" data-caption="Shape Of Love"></a>
+                                    <div style="display:none">
+                                        <a href="img/Graphic design-03.jpg" data-fancybox="project" data-caption="Shape Of Love"></a>
+                                    </div>
+                                </div>
                             </div>
+
                             <div class="project p-3">
                                 <div class="project-title">
                                     <h1>Poster 03</h1>
                                 </div>
                                 <div class="project-categ">Illustrator</div>
-                                <div class="project-overlay"></div>
+                                <div class="project-overlay">
+                                    <a href="img/Graphic design-04.jpg" data-fancybox="project" data-caption="Shape Of Love"></a>
+                                    <div style="display:none">
+                                        <a href="img/Graphic design-05.jpg" data-fancybox="project" data-caption="Shape Of Love"></a>
+                                    </div>
+                                </div>
                             </div>
                             <div class="project p-4">
                                 <div class="project-title">
-                                    <h1>Card News 01</h1>
+                                    <h1>Card News</h1>
                                 </div>
                                 <div class="project-categ">Illustrator</div>
-                                <div class="project-overlay"></div>
+                                <div class="project-overlay">
+                                    <a href="img/cardnews-01.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
+                                    <div style="display:none">
+                                        <a href="img/cardnews-02.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-03.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-04.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-05.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
+                                    </div>
+                                </div>
                             </div>
                             <div class="project p-5">
                                 <div class="project-title">
                                     <h1>Event Banner 01</h1>
                                 </div>
                                 <div class="project-categ">Photoshop</div>
-                                <div class="project-overlay"></div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/Graphic design-06.jpg" data-fancybox="project"
+                                        data-caption="영도 오토캠핑장">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
                             </div>
                             <div class="project p-6">
                                 <div class="project-title">
                                     <h1>Event Banner 02</h1>
                                 </div>
                                 <div class="project-categ">Photoshop</div>
-                                <div class="project-overlay"></div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/Graphic design-07.jpg" data-fancybox="project"
+                                        data-caption="테마파크 애견동반 펜션">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
                             </div>
                             <div class="project p-7">
                                 <div class="project-title">
                                     <h1>Event Banner 03</h1>
                                 </div>
                                 <div class="project-categ">Photoshop</div>
-                                <div class="project-overlay"></div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/Graphic design-08.jpg" data-fancybox="project"
+                                        data-caption="고등학교 입시 설명회">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
                             </div>
                             <div class="project p-8">
                                 <div class="project-title">
                                     <h1>Detailed Page</h1>
                                 </div>
                                 <div class="project-categ">Photoshop</div>
-                                <div class="project-overlay"></div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/detail_page.png" data-fancybox="project"
+                                        data-caption="어뮤즈 상세페이지">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
