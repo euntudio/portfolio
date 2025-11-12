@@ -590,34 +590,45 @@
                 onLeaveBack: () => gsap.to("body", { backgroundColor: "#fff", duration: 0.8 }),
             });
 
-            // 🐾 메인·클론 프로젝트 구간에서는 발자국 숨기기
-            ScrollTrigger.create({
-                trigger: "#main_project",
-                start: "top center",
-                endTrigger: "#graphic_design",
-                end: "bottom center",
-                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5, ease: "power2.out" }),
-                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5, ease: "power2.out" }),
-                onLeave: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5, ease: "power2.out" }),
-                onLeaveBack: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5, ease: "power2.out" }),
-            });
-
-            // 🐾 발자국 배경: introduce, about_me 에서만 표시
+            // HOME 들어갈 때 숨기기
             ScrollTrigger.create({
                 trigger: "#home",
-                start: "top top",
-                endTrigger: "#about_me",
-                end: "bottom bottom",
-                onUpdate: self => {
-                    const progress = self.progress;
-                    const pawVisible = (progress > 0.15 && progress < 0.75); // introduce~about_me 구간
-                    gsap.to(".paw-bg", {
-                        autoAlpha: pawVisible ? 1 : 0,
-                        duration: 0.5,
-                        ease: "power2.out"
-                    });
-                }
+                start: "top center",
+                end: "bottom center",
+                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
             });
+
+            // INTRODUCE 들어가면 보이기
+            ScrollTrigger.create({
+                trigger: "#introduce",
+                start: "top center",
+                end: "bottom center",
+                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5 }),
+                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5 }),
+                onLeave: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+                onLeaveBack: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+            });
+
+            // ABOUT_ME ~ GRAPHIC_DESIGN 구간에서는 숨기기
+            ScrollTrigger.create({
+                trigger: "#about_me",
+                start: "top top",
+                endTrigger: "#graphic_design",
+                end: "bottom center",
+                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+            });
+
+            // CONTACT_ME 들어가면 보이기
+            ScrollTrigger.create({
+                trigger: "#contact_me",
+                start: "top center",
+                end: "bottom center",
+                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5 }),
+                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5 }),
+            });
+
 
         });
 
@@ -639,6 +650,7 @@
                 init: () => window.snapObserver && window.snapObserver.disable(),
                 destroy: () => window.snapObserver && window.snapObserver.enable(),
             },
+
 
         });
         // 스냅 마지막 섹션 재동기화
