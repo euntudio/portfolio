@@ -305,59 +305,119 @@ body {
 }
 
 .paw-bg .paw:nth-child(1) {
-    top: 85%;
-    left: 8%;
+    top: 75%;
+    left: 25%;
     transform: rotate(-10deg);
     animation-delay: 0s;
 }
 
 .paw-bg .paw:nth-child(2) {
-    top: 81%;
-    left: 5%;
+    top: 70%;
+    left: 27%;
     transform: rotate(5deg);
-    animation-delay: .3s;
+    animation-delay: 0s;
 }
 
 .paw-bg .paw:nth-child(3) {
-    top: 72%;
-    left: 7%;
+    top: 74%;
+    left: 31%;
     transform: rotate(-8deg);
-    animation-delay: .6s;
+    animation-delay: .3s;
 }
 
 .paw-bg .paw:nth-child(4) {
-    top: 68%;
-    left: 5%;
+    top: 70%;
+    left: 33%;
     transform: rotate(8deg);
-    animation-delay: .9s;
+    animation-delay: .3s;
 }
 
 .paw-bg .paw:nth-child(5) {
-    top: 61%;
-    left: 7%;
+    top: 74%;
+    left: 37%;
     transform: rotate(-6deg);
-    animation-delay: 1.2s;
+    animation-delay: .6s;
 }
 
 .paw-bg .paw:nth-child(6) {
-    top: 55%;
-    left: 5%;
+    top: 70%;
+    left: 38%;
     transform: rotate(6deg);
-    animation-delay: 1.5s;
+    animation-delay: .6s;
 }
 
 .paw-bg .paw:nth-child(7) {
-    top: 48%;
-    left: 7%;
+    top: 74%;
+    left: 43%;
     transform: rotate(-4deg);
-    animation-delay: 1.8s;
+    animation-delay: .9s;
 }
 
 .paw-bg .paw:nth-child(8) {
-    top: 43%;
-    left: 5%;
+    top: 70%;
+    left: 42%;
+    transform: rotate(4deg);
+    animation-delay: .9s;
+}
+.paw-bg .paw:nth-child(9) {
+    top: 70%;
+    left: 47%;
+    transform: rotate(4deg);
+    animation-delay: 1.2s;
+}
+.paw-bg .paw:nth-child(10) {
+    top: 74%;
+    left: 49%;
+    transform: rotate(4deg);
+    animation-delay: 1.2s;
+}
+.paw-bg .paw:nth-child(11) {
+    top: 70%;
+    left: 52%;
+    transform: rotate(4deg);
+    animation-delay: 1.5s;
+}
+.paw-bg .paw:nth-child(12) {
+    top: 74%;
+    left: 53%;
+    transform: rotate(4deg);
+    animation-delay: 1.5s;
+}
+.paw-bg .paw:nth-child(13) {
+    top: 70%;
+    left: 56%;
+    transform: rotate(4deg);
+    animation-delay: 1.8s;
+}
+.paw-bg .paw:nth-child(14) {
+    top: 74%;
+    left: 58%;
+    transform: rotate(4deg);
+    animation-delay: 1.8s;
+}
+.paw-bg .paw:nth-child(15) {
+    top: 70%;
+    left: 62%;
     transform: rotate(4deg);
     animation-delay: 2.1s;
+}
+.paw-bg .paw:nth-child(16) {
+    top: 74%;
+    left: 64%;
+    transform: rotate(4deg);
+    animation-delay: 2.1s;
+}
+.paw-bg .paw:nth-child(17) {
+    top: 70%;
+    left: 68%;
+    transform: rotate(4deg);
+    animation-delay: 2.4s;
+}
+.paw-bg .paw:nth-child(18) {
+    top: 75%;
+    left: 71%;
+    transform: rotate(4deg);
+    animation-delay: 2.4s;
 }
 
 /* 깜빡이며 찍히는 느낌 */
@@ -381,6 +441,38 @@ body {
         transform: translateY(-4px) scale(1);
     }
 }
+
+/* 각 발자국의 회전값을 변수로 */
+.paw-bg .paw {
+    --rot: 100deg;
+    transform-origin: center;
+}
+
+/* ... 나머지도 --rot 값만 각자 지정 */
+
+/* 애니메이션에서 변수 포함해서 '한 번'에 변환 */
+@keyframes pawFade {
+    0% {
+        opacity: 0;
+        transform: rotate(var(--rot)) translateY(4px) scale(0.9);
+    }
+
+    15% {
+        opacity: 1;
+        transform: rotate(var(--rot)) translateY(0) scale(1);
+    }
+
+    60% {
+        opacity: 1;
+        transform: rotate(var(--rot)) translateY(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: rotate(var(--rot)) translateY(-4px) scale(1);
+    }
+}
+
 
 
 

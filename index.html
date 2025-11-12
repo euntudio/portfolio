@@ -578,9 +578,7 @@
                 currentIndex = closest;
             });
 
-            // =========================
-            // 메인~클론 구간만 배경 #363636
-            // =========================
+            //메인~클론 섹션 배경색 변경
             ScrollTrigger.create({
                 trigger: "#main_project",
                 start: "top center",
@@ -590,6 +588,35 @@
                 onEnterBack: () => gsap.to("body", { backgroundColor: "#363636", duration: 0.8 }),
                 onLeave: () => gsap.to("body", { backgroundColor: "#fff", duration: 0.8 }),
                 onLeaveBack: () => gsap.to("body", { backgroundColor: "#fff", duration: 0.8 }),
+            });
+
+            // 🐾 메인·클론 프로젝트 구간에서는 발자국 숨기기
+            ScrollTrigger.create({
+                trigger: "#main_project",
+                start: "top center",
+                endTrigger: "#graphic_design",
+                end: "bottom center",
+                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5, ease: "power2.out" }),
+                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5, ease: "power2.out" }),
+                onLeave: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5, ease: "power2.out" }),
+                onLeaveBack: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5, ease: "power2.out" }),
+            });
+
+            // 🐾 발자국 배경: introduce, about_me 에서만 표시
+            ScrollTrigger.create({
+                trigger: "#home",
+                start: "top top",
+                endTrigger: "#about_me",
+                end: "bottom bottom",
+                onUpdate: self => {
+                    const progress = self.progress;
+                    const pawVisible = (progress > 0.15 && progress < 0.75); // introduce~about_me 구간
+                    gsap.to(".paw-bg", {
+                        autoAlpha: pawVisible ? 1 : 0,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    });
+                }
             });
 
         });
@@ -612,6 +639,7 @@
                 init: () => window.snapObserver && window.snapObserver.disable(),
                 destroy: () => window.snapObserver && window.snapObserver.enable(),
             },
+
         });
         // 스냅 마지막 섹션 재동기화
         ScrollTrigger.refresh(true);
@@ -745,33 +773,6 @@
             </section><!-- #home.home end -->
 
             <section id="introduce" class="introduce" data-snap>
-                <div class="paw-bg">
-                    <!-- 왼쪽에서 오른쪽으로 살짝 대각선 -->
-                    <div class="paw"><svg class="icon">
-                            <use href="#paw-left" />
-                        </svg></div>
-                    <div class="paw"><svg class="icon">
-                            <use href="#paw-right" />
-                        </svg></div>
-                    <div class="paw"><svg class="icon">
-                            <use href="#paw-left" />
-                        </svg></div>
-                    <div class="paw"><svg class="icon">
-                            <use href="#paw-right" />
-                        </svg></div>
-                    <div class="paw"><svg class="icon">
-                            <use href="#paw-left" />
-                        </svg></div>
-                    <div class="paw"><svg class="icon">
-                            <use href="#paw-right" />
-                        </svg></div>
-                    <div class="paw"><svg class="icon">
-                            <use href="#paw-left" />
-                        </svg></div>
-                    <div class="paw"><svg class="icon">
-                            <use href="#paw-right" />
-                        </svg></div>
-                </div>
                 <div class="introduce-inner">
                     <div class="about">
                         <div class="about-text" split-lines>
@@ -1194,7 +1195,7 @@
                                     <ul class="info-detail">
                                         <li>MAIN PAGE</li>
                                         <li>FIGMA, VS CODE, PHOTOSHOP</li>
-                                        <li>기획·디자인·퍼블리싱 100%</li>
+                                        <li>기획·디자인 100%</li>
                                     </ul>
                                 </div>
                                 <div class="project-buttons">
@@ -1311,7 +1312,7 @@
                                     <ul class="info-detail">
                                         <li>MAIN PAGE</li>
                                         <li>VS CODE</li>
-                                        <li>100%</li>
+                                        <li>퍼블리싱 100%</li>
                                     </ul>
                                 </div>
                                 <div class="project-buttons">
@@ -1438,7 +1439,8 @@
                                 <div class="project-categ">Illustrator</div>
                                 <div class="project-overlay">
                                     <!-- 클릭 트리거 -->
-                                    <a href="img/Graphic design-01.jpg" data-fancybox="project" data-caption="Shape Of Love">
+                                    <a href="img/Graphic design-01.jpg" data-fancybox="project"
+                                        data-caption="Shape Of Love">
                                         <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
                                     </a>
                                 </div>
@@ -1450,9 +1452,11 @@
                                 </div>
                                 <div class="project-categ">Illustrator</div>
                                 <div class="project-overlay">
-                                    <a href="img/Graphic design-02.jpg" data-fancybox="project" data-caption="Shape Of Love"></a>
+                                    <a href="img/Graphic design-02.jpg" data-fancybox="project"
+                                        data-caption="Shape Of Love"></a>
                                     <div style="display:none">
-                                        <a href="img/Graphic design-03.jpg" data-fancybox="project" data-caption="Shape Of Love"></a>
+                                        <a href="img/Graphic design-03.jpg" data-fancybox="project"
+                                            data-caption="Shape Of Love"></a>
                                     </div>
                                 </div>
                             </div>
@@ -1463,9 +1467,11 @@
                                 </div>
                                 <div class="project-categ">Illustrator</div>
                                 <div class="project-overlay">
-                                    <a href="img/Graphic design-04.jpg" data-fancybox="project" data-caption="Shape Of Love"></a>
+                                    <a href="img/Graphic design-04.jpg" data-fancybox="project"
+                                        data-caption="Shape Of Love"></a>
                                     <div style="display:none">
-                                        <a href="img/Graphic design-05.jpg" data-fancybox="project" data-caption="Shape Of Love"></a>
+                                        <a href="img/Graphic design-05.jpg" data-fancybox="project"
+                                            data-caption="Shape Of Love"></a>
                                     </div>
                                 </div>
                             </div>
@@ -1475,12 +1481,17 @@
                                 </div>
                                 <div class="project-categ">Illustrator</div>
                                 <div class="project-overlay">
-                                    <a href="img/cardnews-01.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
+                                    <a href="img/cardnews-01.png" data-fancybox="project"
+                                        data-caption="진해서부소방서 명절 안전수칙"></a>
                                     <div style="display:none">
-                                        <a href="img/cardnews-02.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
-                                        <a href="img/cardnews-03.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
-                                        <a href="img/cardnews-04.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
-                                        <a href="img/cardnews-05.png" data-fancybox="project" data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-02.png" data-fancybox="project"
+                                            data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-03.png" data-fancybox="project"
+                                            data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-04.png" data-fancybox="project"
+                                            data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-05.png" data-fancybox="project"
+                                            data-caption="진해서부소방서 명절 안전수칙"></a>
                                     </div>
                                 </div>
                             </div>
@@ -1491,8 +1502,7 @@
                                 <div class="project-categ">Photoshop</div>
                                 <div class="project-overlay">
                                     <!-- 클릭 트리거 -->
-                                    <a href="img/Graphic design-06.jpg" data-fancybox="project"
-                                        data-caption="영도 오토캠핑장">
+                                    <a href="img/Graphic design-06.jpg" data-fancybox="project" data-caption="영도 오토캠핑장">
                                         <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
                                     </a>
                                 </div>
@@ -1530,8 +1540,7 @@
                                 <div class="project-categ">Photoshop</div>
                                 <div class="project-overlay">
                                     <!-- 클릭 트리거 -->
-                                    <a href="img/detail_page.png" data-fancybox="project"
-                                        data-caption="어뮤즈 상세페이지">
+                                    <a href="img/detail_page.png" data-fancybox="project" data-caption="어뮤즈 상세페이지">
                                         <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
                                     </a>
                                 </div>
@@ -1598,6 +1607,64 @@
                 </div><!-- .copyright end -->
             </section>
         </footer>
+
+        <div class="paw-bg">
+            <!-- 왼쪽에서 오른쪽으로 살짝 대각선 -->
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+        </div>
     </div><!-- #wrap end -->
 </body>
 
