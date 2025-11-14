@@ -360,7 +360,6 @@
                     }
                 }
 
-                // 클릭 시 부드러운 스크롤
                 navLinks.forEach((link) => {
                     link.addEventListener("click", (e) => {
                         const href = link.getAttribute("href");
@@ -371,17 +370,16 @@
 
                         e.preventDefault();
 
-                        gsap.to(window, {
-                            scrollTo: {
-                                y: target,
-                                offsetY: headerHeight, // 헤더 높이만큼 위 여백
-                                autoKill: true,
-                            },
-                            duration: 0.8,
-                            ease: "power2.inOut",
-                        });
+                        // 🔥 네 스냅 구조에서 사용하는 sections 배열을 그대로 사용
+                        const index = sections.indexOf(target);
+
+                        if (index !== -1) {
+                            // 🔥 GNB 클릭도 스냅 흐름으로 처리!
+                            scrollToSection(index);
+                        }
                     });
                 });
+
 
                 // 스크롤할 때 현재 섹션에 맞춰 active 변경
                 const sections = gsap.utils.toArray("main > section, #contact_me");
@@ -880,20 +878,33 @@
                             </div>
 
                             <div class="about-skill-icons">
-                                <div class="skill-icon" data-tooltip="Photoshop으로 이미지 보정 및 UI 디자인이 가능합니다."><img src="img/photoshop.svg"></div>
-                                <div class="skill-icon" data-tooltip="Illustrator로 로고 및 아이콘 디자인이 가능합니다."><img src="img/ai.svg"></div>
-                                <div class="skill-icon" data-tooltip="Figma로 UI설계와 프로토타입을 제작할 수 있습니다."><img src="img/figma.svg"></div>
-                                <div class="skill-icon" data-tooltip="Visual Studio Code로 효율적인 웹 개발이 가능합니다."><img src="img/visual.svg">
+                                <div class="skill-icon" data-tooltip="Photoshop으로 이미지 보정 및 UI 디자인이 가능합니다."><img
+                                        src="img/photoshop.svg"></div>
+                                <div class="skill-icon" data-tooltip="Illustrator로 로고 및 아이콘 디자인이 가능합니다."><img
+                                        src="img/ai.svg"></div>
+                                <div class="skill-icon" data-tooltip="Figma로 UI설계와 프로토타입을 제작할 수 있습니다."><img
+                                        src="img/figma.svg"></div>
+                                <div class="skill-icon" data-tooltip="Visual Studio Code로 효율적인 웹 개발이 가능합니다."><img
+                                        src="img/visual.svg">
                                 </div>
-                                <div class="skill-icon" data-tooltip="GitHub를 통한 버전관리와 협업이 가능합니다."><img src="img/github.svg"></div>
-                                <div class="skill-icon" data-tooltip="HTML5 마크업 구조를 잘 이해하고 작성할 수 있습니다."><img src="img/html.svg"></div>
-                                <div class="skill-icon" data-tooltip="CSS3로 반응형 웹사이트 스타일링이 가능합니다."><img src="img/css.svg"></div>
-                                <div class="skill-icon" data-tooltip="JavaScript로 웹페이지에 인터렉션 기능을 추가할 수 있습니다."><img src="img/javascript.svg"></div>
-                                <div class="skill-icon" data-tooltip="PowerPoint로 기획서, 프로세스 페이지 제작이 가능합니다."><img src="img/powerpoint.svg"></div>
-                                <div class="skill-icon" data-tooltip="Excel로 데이터 정리, 분석 통계 처리에 능숙합니다."><img src="img/excel.svg"></div>
-                                <div class="skill-icon" data-tooltip="Access로 데이터베이스 구축 및 관리가 가능합니다."><img src="img/access.svg"></div>
-                                <div class="skill-icon" data-tooltip="MiriCanvas 제작에 능숙합니다."><img src="img/miri.svg"></div>
-                                <div class="skill-icon" data-tooltip="Notion으로 문서 및 프로젝트 관리를 체계적으로 할 수 있습니다."><img src="img/notion.svg"></div>
+                                <div class="skill-icon" data-tooltip="GitHub를 통한 버전관리와 협업이 가능합니다."><img
+                                        src="img/github.svg"></div>
+                                <div class="skill-icon" data-tooltip="HTML5 마크업 구조를 잘 이해하고 작성할 수 있습니다."><img
+                                        src="img/html.svg"></div>
+                                <div class="skill-icon" data-tooltip="CSS3로 반응형 웹사이트 스타일링이 가능합니다."><img
+                                        src="img/css.svg"></div>
+                                <div class="skill-icon" data-tooltip="JavaScript로 웹페이지에 인터렉션 기능을 추가할 수 있습니다."><img
+                                        src="img/javascript.svg"></div>
+                                <div class="skill-icon" data-tooltip="PowerPoint로 기획서, 프로세스 페이지 제작이 가능합니다."><img
+                                        src="img/powerpoint.svg"></div>
+                                <div class="skill-icon" data-tooltip="Excel로 데이터 정리, 분석 통계 처리에 능숙합니다."><img
+                                        src="img/excel.svg"></div>
+                                <div class="skill-icon" data-tooltip="Access로 데이터베이스 구축 및 관리가 가능합니다."><img
+                                        src="img/access.svg"></div>
+                                <div class="skill-icon" data-tooltip="MiriCanvas 제작에 능숙합니다."><img src="img/miri.svg">
+                                </div>
+                                <div class="skill-icon" data-tooltip="Notion으로 문서 및 프로젝트 관리를 체계적으로 할 수 있습니다."><img
+                                        src="img/notion.svg"></div>
                             </div>
 
                         </div><!-- .about-content end -->
@@ -1030,8 +1041,7 @@
                                     <!-- <a href="#" class="btn-project" target="_blank">I LEARNED
                                         <img src="img/link-angled.svg" alt="">
                                     </a> -->
-                                    <a href="#"
-                                        class="btn-project" target="_blank">QR Code
+                                    <a href="#" class="btn-project" target="_blank">QR Code
                                     </a>
                                 </div>
                             </div>
@@ -1171,8 +1181,7 @@
                                     <!-- <a href="#" class="btn-project" target="_blank">I LEARNED
                                         <img src="img/link-angled.svg" alt="">
                                     </a> -->
-                                    <a href="#"
-                                        class="btn-project" target="_blank">QR Code
+                                    <a href="#" class="btn-project" target="_blank">QR Code
                                     </a>
                                 </div>
                             </div>
