@@ -748,6 +748,27 @@
                 }
             });
 
+            //로딩 모달 팝업
+            const modal = document.getElementById("introModal");
+            const closeBtn = modal.querySelector(".intro-close-btn");
+
+            // 항상 로딩 시 보여줌
+            modal.classList.add("is-active");
+
+            // 스냅 동작 잠시 중지
+            if (window.snapObserver && window.snapObserver.disable) {
+                window.snapObserver.disable();
+            }
+
+            closeBtn.addEventListener("click", function () {
+                modal.classList.remove("is-active");
+
+                // 스냅 다시 활성화
+                if (window.snapObserver && window.snapObserver.enable) {
+                    window.snapObserver.enable();
+                }
+            });
+
 
         });
     </script>
@@ -1819,7 +1840,21 @@
         </div>
     </div><!-- #wrap end -->
 
-    <!-- 공통 팝업 -->
+    <!-- 로딩 안내 모달 -->
+    <div class="intro-modal" id="introModal">
+        <div class="intro-modal-inner">
+            <div class="intro-modal-text">
+                <p class="intro-title">🖤WELCOME TO🖤<br>JIEUN'S PORTFOLIO</p>
+                <p class="intro-desc">
+                    본 포트폴리오는 해상도 <b>1920 × 1080</b>에 최적화되어 있습니다.<br>
+                    <span class="intro-sub">* 추후 반응형 작업 예정입니다.</span>
+                </p>
+            </div>
+            <button type="button" class="intro-close-btn">닫기</button>
+        </div>
+    </div>
+
+    <!-- 배운점 팝업 -->
     <div class="popup-overlay" id="learned-popup">
         <div class="popup-content">
             <h2 class="modal-title">I LEARNED</h2>
@@ -1829,6 +1864,7 @@
             <button class="close-btn">닫기</button>
         </div>
     </div>
+
 
 
 </body>
