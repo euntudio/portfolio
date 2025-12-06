@@ -678,6 +678,64 @@
             // 스냅 마지막 섹션 재동기화
             ScrollTrigger.refresh(true);
 
+            // I LEARNED 팝업
+
+            // 프로젝트별 텍스트
+            const learnedTexts = {
+                "learned-coca": `
+            스크롤 시점에 따라 트리거나 핀이 걸리는 타이밍을 잡는 과정이 어려웠습니다.<br>
+            값 하나만 바꿔도 눈에 띄게 되거나 흐름이 바뀌기 때문에 자연스럽게<br>
+            넘어가도록 조정하는데 많은 시간이 걸렸습니다. 하지만 반복적인 테스트 끝에
+            콘텐츠 종류별로 적절한 모션 타이밍을 감각적으로 판단하는 능력이 생겼고,<br>
+            GSAP 스크롤 구조에 대한 이해도도 훨씬 깊어졌습니다.
+            `,
+                "learned-almang": `
+            - 반응형 레이아웃을 직접 설계하며 모바일·PC 환경에서의 우선순위를 고민했습니다.<br>
+            - Swiper.js를 활용해 콘텐츠를 효율적으로 보여주는 슬라이드를 구현했습니다.<br>
+            - '알맹이'라는 키워드를 중심으로 브랜딩과 UI 요소를 연결하는 방법을 익혔습니다.
+        `,
+                "learned-swell": `
+            - 상품 특성에 맞는 다이내믹한 모션과 컬러 시스템을 구성했습니다.<br>
+            - 슬라이드 인터랙션과 CTA 배치를 통해 사용자의 시선을 유도하는 법을 연습했습니다.
+        `,
+                "learned-amuse": `
+            - 앱 구조를 참고해 모바일 UX 플로우(탐색→상세→구매)를 설계했습니다.<br>
+            - 이미지 중심 브랜드의 특성을 유지하면서 정보 구조를 단순화하는 경험을 했습니다.
+        `,
+                "learned-mcdonald": `
+            - 인앱 결제 플로우를 기준으로 사용자 여정을 다시 설계해 보았습니다.<br>
+            - 실제 사용자의 불편함을 개선하는 관점에서 UI를 수정하는 연습을 했습니다.
+        `
+            };
+
+            // 팝업 요소 캐싱
+            const $popup = $("#learned-popup");
+            const $popupText = $popup.find(".modal-text");
+
+            // 열기
+            $(".btn-project.open-learned").on("click", function (e) {
+                e.preventDefault();
+
+                const key = $(this).data("modal");
+                const text = learnedTexts[key] || "내용이 아직 준비되지 않았습니다.";
+
+                $popupText.html(text);
+                $popup.addClass("active");
+            });
+
+            // 닫기 버튼
+            $popup.find(".close-btn").on("click", function () {
+                $popup.removeClass("active");
+            });
+
+            // 오버레이 바깥 클릭 시 닫기
+            $popup.on("click", function (e) {
+                if (e.target === this) {
+                    $popup.removeClass("active");
+                }
+            });
+
+
         });
     </script>
 
@@ -1007,9 +1065,11 @@
                                         class="btn-project" target="_blank">FIGMA
                                         <img src="img/link-angled.svg" alt="">
                                     </a>
-                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
-                                        <img src="img/link-angled.svg" alt="">
-                                    </a>
+                                    <button type="button" class="btn-project open-learned" data-modal="learned-coca">
+                                        I LEARNED
+                                        <img src="img/link-angled.svg">
+                                    </button>
+
                                 </div>
                             </div>
                             <div class="project-mockup multi-device">
@@ -1067,9 +1127,10 @@
                                         class="btn-project" target="_blank">FIGMA
                                         <img src="img/link-angled.svg" alt="">
                                     </a>
-                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
+                                    <button type="button" class="btn-project open-learned" data-modal="learned-almang">
+                                        I LEARNED
                                         <img src="img/link-angled.svg" alt="">
-                                    </a>
+                                    </button>
                                     <a href="#" class="btn-project" target="_blank" data-modal="qr">QR Code
                                     </a>
                                 </div>
@@ -1147,9 +1208,11 @@
                                         class="btn-project" target="_blank">FIGMA
                                         <img src="img/link-angled.svg" alt="">
                                     </a>
-                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
+                                    <button type="button" class="btn-project open-learned" data-modal="learned-swell">
+                                        I LEARNED
                                         <img src="img/link-angled.svg" alt="">
-                                    </a>
+                                    </button>
+
                                 </div>
                             </div>
                             <div class="project-mockup">
@@ -1207,9 +1270,10 @@
                                         class="btn-project" target="_blank">FIGMA
                                         <img src="img/link-angled.svg" alt="">
                                     </a>
-                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
+                                    <button type="button" class="btn-project open-learned" data-modal="learned-amuse">
+                                        I LEARNED
                                         <img src="img/link-angled.svg" alt="">
-                                    </a>
+                                    </button>
                                     <a href="#" class="btn-project" target="_blank" data-modal="qr">QR Code
                                     </a>
                                 </div>
@@ -1265,9 +1329,12 @@
                                     <a href="process/mcdonald_process.pdf" class="btn-project" target="_blank">PROCESS
                                         <img src="img/link-angled.svg" alt="">
                                     </a>
-                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
+                                    <button type="button" class="btn-project open-learned"
+                                        data-modal="learned-mcdonald">
+                                        I LEARNED
                                         <img src="img/link-angled.svg" alt="">
-                                    </a>
+                                    </button>
+
                                 </div>
                             </div>
                             <div class="project-mockup mcdonald-mockup">
@@ -1739,14 +1806,18 @@
         </div>
     </div><!-- #wrap end -->
 
-    <div class="modal">
-        <div class="modal_popup">
-            <h3 class="modal_title">모달 제목</h3>
-            <p class="modal_text">모달 내용입니다.</p>
-            <button type="button" class="close_btn">닫기</button>
+    <!-- 공통 팝업 -->
+    <div class="popup-overlay" id="learned-popup">
+        <div class="popup-content">
+            <h2 class="modal-title">I LEARNED</h2>
+            <div class="modal-text">
+                <!-- JS에서 내용 들어갈 부분 -->
+            </div>
+            <button class="close-btn">닫기</button>
         </div>
     </div>
-    
+
+
 </body>
 
 </html>
