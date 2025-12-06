@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jieun/portfolio</title>
+    <link rel="icon" type="image/png" href="img/logo.svg">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/carousel.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1/dist/fancybox/fancybox.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1/dist/fancybox/fancybox.umd.js"></script>
+
+    <!-- JS -->
+    <script src="lib/jquery-3.7.1.min.js"></script>
+    <script src="lib/gsap.min.js"></script>
+    <script src="lib/ScrollTrigger.min.js"></script>
+    <script src="lib/ScrollToPlugin.min.js"></script>
+    <script src="lib/Observer.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            //팬시박스
+            Fancybox.bind('[data-fancybox="project"]', {
+                Thumbs: { autoStart: true },     // 하단 썸네일 자동 표시
+                Toolbar: {
+                    display: [
+                        "counter",                   // 좌상단 1/3
+                        "thumbs",                    // 썸네일 토글
+                        "zoom", "fullscreen", "download",
+                        "close"
+                    ],
+                },
+                Carousel: { transition: "slide" },
+
+                // 팝업 동안 스냅 잠시 OFF, 닫히면 ON
+                on: {
+                    init: () => window.snapObserver && window.snapObserver.disable(),
+                    destroy: () => window.snapObserver && window.snapObserver.enable(),
+                },
+
+
+            });
+            gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, Observer);
+
+            //TOP TITLE 마우스 그라데이션
+            const title = document.querySelector(".top_title");
+            if (title) {
+                title.addEventListener("mousemove", (e) => {
+                    const rect = title.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 200;
+                    gsap.to(title, {
+                        "--x": x + "%",
+                        "--y": y + "%",
+                        duration: 0.5,
+                        ease: "power2.out",
+                    });
+                });
+            }
+
+            //토끼 눈동자
+            const svg = document.querySelector(".bunny-eyes");
+            if (svg) {
+                const mouse = svg.createSVGPoint();
+                const leftEye = createEye("#left-eye");
+                const rightEye = createEye("#right-eye");
+                let requestID = null;
+
+                window.addEventListener("mousemove", (e) => {
+                    mouse.x = e.clientX;
+                    mouse.y = e.clientY;
+                    if (!requestID) requestID = requestAnimationFrame(onFrame);
+                });
+
+                function onFrame() {
+                    const ctm = svg.getScreenCTM();
+                    if (!ctm) {
+                        requestID = null;
+                        return;
+                    }
+                    const pt = mouse.matrixTransform(ctm.inverse());
+                    if (leftEye) leftEye.rotateTo(pt);
+                    if (rightEye) rightEye.rotateTo(pt);
+                    requestID = null;
+                }
+
+                function createEye(selector) {
+                    const group = svg.querySelector(selector);
+                    if (!group) return null;
+                    const pupil = group.querySelector(".pupil");
+                    const highlight = group.querySelector(".highlight");
+                    if (!pupil) return null;
+
+                    const eyeBox = group.getBBox();
+                    const eyeCX = eyeBox.x + eyeBox.width / 2;
+                    const eyeCY = eyeBox.y + eyeBox.height / 2;
+
+                    const pupilBox = pupil.getBBox();
+                    const pupilCX0 = pupilBox.x + pupilBox.width / 2;
+                    const pupilCY0 = pupilBox.y + pupilBox.height / 2;
+
+                    let offsetX = 0;
+                    let offsetY = 0;
+                    if (highlight) {
+                        const hBox = highlight.getBBox();
+                        const hCX0 = hBox.x + hBox.width / 2;
+                        const hCY0 = hBox.y + hBox.height / 2;
+                        offsetX = hCX0 - pupilCX0;
+                        offsetY = hCY0 - pupilCY0;
+                    }
+
+                    const maxDist = 20;
+
+                    function rotateTo(point) {
+                        const dx = point.x - eyeCX;
+                        const dy = point.y - eyeCY;
+                        const angle = Math.atan2(dy, dx);
+                        const dist = Math.min(Math.sqrt(dx * dx + dy * dy), maxDist);
+
+                        const newPX = eyeCX + Math.cos(angle) * dist;
+                        const newPY = eyeCY + Math.sin(angle) * dist;
+                        const newHX = newPX + offsetX;
+                        const newHY = newPY + offsetY;
+
+                        gsap.to(pupil, {
+                            attr: { cx: newPX, cy: newPY },
+                            duration: 0.15,
+                            ease: "power2.out",
+                            overwrite: true,
+                        });
+
+                        if (highlight) {
+                            gsap.to(highlight, {
+                                attr: { cx: newHX, cy: newHY },
+                                duration: 0.15,
+                                ease: "power2.out",
+                                overwrite: true,
+                            });
+                        }
+                    }
+
+                    return { rotateTo };
+                }
+            }
+
+            //폴더
+            $(function () {
+                const $wrap = $("#home");
+                const dragThreshold = 6;
+
+                $(".folder-item").each(function () {
+                    const $item = $(this);
+                    const $toggle = $item.find(".folder-toggle");
+                    const $icon = $item.find(".folder-icon");
+                    const $label = $item.find(".folder-label");
+
+                    let isDragging = false;
+                    let startX = 0;
+                    let startY = 0;
+                    let originLeft = 0;
+                    let originTop = 0;
+
+                    $item.on("mousedown", function (e) {
+                        if (e.button !== 0) return;
+
+                        isDragging = false;
+                        startX = e.pageX;
+                        startY = e.pageY;
+                        originLeft = parseInt($item.css("left")) || 0;
+                        originTop = parseInt($item.css("top")) || 0;
+
+                        $(document)
+                            .on("mousemove.folderDrag", function (ev) {
+                                const dx = ev.pageX - startX;
+                                const dy = ev.pageY - startY;
+
+                                if (!isDragging && (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold)) {
+                                    isDragging = true;
+                                    $item.addClass("dragging");
+                                }
+
+                                if (isDragging) {
+                                    const bounds = $wrap[0].getBoundingClientRect();
+                                    const itemRect = $item[0].getBoundingClientRect();
+                                    let newLeft = originLeft + dx;
+                                    let newTop = originTop + dy;
+                                    const maxLeft = bounds.width - itemRect.width;
+                                    const maxTop = bounds.height - itemRect.height;
+                                    newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+                                    newTop = Math.max(0, Math.min(newTop, maxTop));
+                                    $item.css({ left: newLeft + "px", top: newTop + "px" });
+                                }
+                            })
+                            .on("mouseup.folderDrag", function () {
+                                $(document).off(".folderDrag");
+                                $item.removeClass("dragging");
+                                if (isDragging) {
+                                    $item.data("wasDragging", true);
+                                    setTimeout(() => $item.removeData("wasDragging"), 0);
+                                }
+                                isDragging = false;
+                            });
+                    });
+
+                    $label.on("click", function () {
+                        if ($item.data("wasDragging")) return;
+
+                        setTimeout(function () {
+                            const opened = $toggle.prop("checked");
+                            if (opened) {
+                                $(".folder-toggle").not($toggle).prop("checked", false);
+                            }
+                            if (opened) {
+                                gsap.fromTo(
+                                    $icon,
+                                    { y: 0, scale: 1 },
+                                    { y: -4, scale: 1.04, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.out" }
+                                );
+                            }
+                        }, 0);
+                    });
+                });
+
+                // 이미지 아이콘
+                $(".image_icon").each(function () {
+                    const $item = $(this);
+                    let startX = 0;
+                    let startY = 0;
+                    let originLeft = 0;
+                    let originTop = 0;
+                    let isDragging = false;
+
+                    $item.on("mousedown", function (e) {
+                        if (e.which !== 1) return;
+                        e.preventDefault();
+
+                        const pos = $item.position();
+                        originLeft = pos.left;
+                        originTop = pos.top;
+                        startX = e.pageX;
+                        startY = e.pageY;
+                        isDragging = false;
+
+                        $(document)
+                            .on("mousemove.image_icon", function (ev) {
+                                const dx = ev.pageX - startX;
+                                const dy = ev.pageY - startY;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                                if (!isDragging && dist > dragThreshold) {
+                                    isDragging = true;
+                                    $item.addClass("dragging");
+                                }
+
+                                if (isDragging) {
+                                    const bounds = $wrap[0].getBoundingClientRect();
+                                    const w = $item.outerWidth();
+                                    const h = $item.outerHeight();
+                                    let newLeft = originLeft + dx;
+                                    let newTop = originTop + dy;
+                                    const maxLeft = bounds.width - w;
+                                    const maxTop = bounds.height - h;
+                                    newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+                                    newTop = Math.max(0, Math.min(newTop, maxTop));
+                                    $item.css({ left: newLeft + "px", top: newTop + "px" });
+                                }
+                            })
+                            .on("mouseup.image_icon", function () {
+                                $(document).off(".image_icon");
+                                if (isDragging) {
+                                    $item.removeClass("dragging");
+                                } else {
+                                    $item.addClass("bounce");
+                                    setTimeout(() => $item.removeClass("bounce"), 220);
+                                }
+                                isDragging = false;
+                            });
+                    });
+                });
+            });
+
+            //어바웃미 텍스트
+            if (window.SplitText) {
+                new SplitText(".about-text[split-lines]", {
+                    type: "lines",
+                    linesClass: "split-line",
+                });
+            }
+
+            const aboutHoverEls = document.querySelectorAll(".about-hover");
+            aboutHoverEls.forEach((el) => {
+                el.classList.add("unhover");
+                el.addEventListener("mouseenter", () => el.classList.remove("unhover"));
+                el.addEventListener("mouseleave", () => el.classList.add("unhover"));
+            });
+
+            window.addEventListener("load", () => {
+                const tl = gsap.timeline({ defaults: { ease: "none" } });
+
+                tl.to(".about-subtitle", { opacity: 0.7, duration: 0.4 }, "+=0.5")
+                    .to(".about-text", { opacity: 1, duration: 0 }, "<")
+                    .fromTo(
+                        ".about-text .split-line",
+                        { y: "100%" },
+                        {
+                            y: 0,
+                            opacity: 1,
+                            ease: "sine.out",
+                            transformOrigin: "top",
+                            stagger: 0.1,
+                            duration: 1.2,
+                        },
+                        "<0.4"
+                    )
+                    .to(".about-down", { opacity: 1, duration: 0.4 }, ">");
+            });
+
+            // =========================
+            // 메인 / 클론 프로젝트 패널 스냅
+            // =========================
+            const projectSections = {
+                main_project: {
+                    panels: Array.from(document.querySelectorAll("#main_project .project-panel")),
+                    items: Array.from(document.querySelectorAll("#main_project .project-item")),
+                    index: 0,
+                },
+                clone_project: {
+                    panels: Array.from(document.querySelectorAll("#clone_project .project-panel")),
+                    items: Array.from(document.querySelectorAll("#clone_project .project-item")),
+                    index: 0,
+                },
+            };
+
+            function setProjectActive(sectionId, newIndex) {
+                const cfg = projectSections[sectionId];
+                if (!cfg) return;
+
+                const total = cfg.panels.length;
+                newIndex = Math.max(0, Math.min(newIndex, total - 1));
+                cfg.index = newIndex;
+
+                cfg.panels.forEach((p, i) => {
+                    p.classList.toggle("is-show", i === newIndex);
+                });
+                cfg.items.forEach((it, i) => {
+                    it.classList.toggle("is-active", i === newIndex);
+                });
+            }
+
+            // 초기 상태: 첫 패널 활성화
+            Object.keys(projectSections).forEach((id) => setProjectActive(id, 0));
+
+            // 사이드 메뉴 클릭 시: 해당 패널로 전환 (스크롤 이동 X, 스냅 흐름 유지)
+            Object.entries(projectSections).forEach(([id, cfg]) => {
+                cfg.items.forEach((item, i) => {
+                    item.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        setProjectActive(id, i);
+                    });
+                });
+            });
+
+
+
+            // =========================
+            // 상단 GNB 부드러운 스크롤 + active 처리
+            // =========================
+            function setupGnbScroll() {
+                const header = document.querySelector(".header");
+                const headerHeight = header ? header.offsetHeight : 0;
+
+                const navLinks = document.querySelectorAll('.gnb a[href^="#"]');
+                const navItems = document.querySelectorAll('.gnb li');
+
+                // active 변경 함수
+                function setActiveNav(hash) {
+                    if (!hash) return;
+                    navItems.forEach((li) => li.classList.remove("active"));
+                    const activeLink = document.querySelector('.gnb a[href="' + hash + '"]');
+                    if (activeLink && activeLink.parentElement) {
+                        activeLink.parentElement.classList.add("active");
+                    }
+                }
+
+                navLinks.forEach((link) => {
+                    link.addEventListener("click", (e) => {
+                        const href = link.getAttribute("href");
+                        if (!href || !href.startsWith("#")) return;
+
+                        const target = document.querySelector(href);
+                        if (!target) return;
+
+                        e.preventDefault();
+
+                        // 🔥 네 스냅 구조에서 사용하는 sections 배열을 그대로 사용
+                        const index = sections.indexOf(target);
+
+                        if (index !== -1) {
+                            // 🔥 GNB 클릭도 스냅 흐름으로 처리!
+                            scrollToSection(index);
+                        }
+                    });
+                });
+
+
+                // 스크롤할 때 현재 섹션에 맞춰 active 변경
+                const sections = gsap.utils.toArray("main > section, #contact_me");
+
+                sections.forEach((sec) => {
+                    if (!sec.id) return;
+
+                    ScrollTrigger.create({
+                        trigger: sec,
+                        start: "top 40%",
+                        end: "bottom 40%",
+                        onEnter: () => setActiveNav("#" + sec.id),
+                        onEnterBack: () => setActiveNav("#" + sec.id),
+                    });
+                });
+            }
+
+            setupGnbScroll();
+
+            // =========================
+            // main_project부터 상단 중앙 고정 내비
+            // =========================
+            const nav = document.querySelector(".nav");
+            if (nav) {
+                ScrollTrigger.create({
+                    trigger: "#main_project",
+                    start: "top 5%",          // main_project 상단이 뷰포트 top에 닿는 순간
+                    onEnter: () => {
+                        nav.classList.add("nav-fixed");
+                    },
+                    onLeaveBack: () => {
+                        nav.classList.remove("nav-fixed");
+                    }
+                });
+            }
+
+            //프로젝트
+            var $cursor = $(".cursor"),
+                $overlay = $(".project-overlay");
+
+            function moveCircle(e) {
+                gsap.to($cursor, {
+                    duration: 0.5,
+                    left: e.pageX,
+                    top: e.pageY,
+                    delay: 0.03
+                });
+            }
+
+
+            $(".p-1").hover(function () {
+                $(".cursor").css({ "background-image": "url('img/Graphic-design-01.jpg')" });
+            });
+
+            $(".p-2").hover(function () {
+                $(".cursor").css({ "background-image": "url('img/Graphic-design-02.jpg')" });
+            });
+            $(".p-3").hover(function () {
+                $(".cursor").css({ "background-image": "url('img/Graphic-design-04.jpg')" });
+            });
+            $(".p-4").hover(function () {
+                $(".cursor").css({ "background-image": "url('img/cardnews-01.png')" });
+            });
+            $(".p-5").hover(function () {
+                $(".cursor").css({ "background-image": "url('img/Graphic-design-06.jpg')" });
+            });
+            $(".p-6").hover(function () {
+                $(".cursor").css({ "background-image": "url('img/Graphic-design-07.jpg')" });
+            });
+            $(".p-7").hover(function () {
+                $(".cursor").css({ "background-image": "url('img/Graphic-design-08.jpg')" });
+            });
+            $(".p-8").hover(function () {
+                $(".cursor").css({ "background-image": "url('img/detail_page.png')" });
+            });
+
+            var flag = false;
+            $($overlay).mousemove(function (e) {
+                flag = true;
+                gsap.to($cursor, { duration: 0.3, scale: 1, autoAlpha: 1 });
+                moveCircle(e); // 첫 위치 갱신
+                $($overlay).on("mousemove.cursorMove", moveCircle);
+            });
+
+            $($overlay).mouseout(function () {
+                flag = false;
+                gsap.to($cursor, { duration: 0.3, scale: 0.1, autoAlpha: 0 });
+                $($overlay).off("mousemove.cursorMove");
+            });
+
+
+            // =========================
+            // 전체 섹션 + 프로젝트 패널 스냅
+            // =========================
+
+            // 스냅 순서에 포함될 섹션들 (현재 HTML 구조 그대로)
+            const sections = [
+                "home",
+                "introduce",
+                "about_me",
+                "main_project",
+                "clone_project",
+                "graphic_design",
+                "contact_me",
+            ].map((id) => document.getElementById(id)).filter(Boolean);
+
+            let currentIndex = 0;
+            let isAnimating = false;
+
+            function scrollToSection(index) {
+                index = gsap.utils.clamp(0, sections.length - 1, index);
+                const target = sections[index];
+                if (!target || index === currentIndex) {
+                    isAnimating = false;
+                    return;
+                }
+
+                isAnimating = true;
+                gsap.to(window, {
+                    scrollTo: { y: target, autoKill: true },
+                    duration: 1.4,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        currentIndex = index;
+                        isAnimating = false;
+                    },
+                });
+            }
+
+            function handleStep(direction) {
+                if (isAnimating) return;
+
+                const currentSection = sections[currentIndex];
+                if (!currentSection) return;
+                const secId = currentSection.id;
+
+                // 1) 메인 / 클론 프로젝트 섹션일 때: 패널 먼저 소비
+                if (projectSections[secId]) {
+                    const cfg = projectSections[secId];
+                    const last = cfg.panels.length - 1;
+
+                    if (direction > 0) {
+                        // 아래로 스크롤
+                        if (cfg.index < last) {
+                            setProjectActive(secId, cfg.index + 1); // 다음 패널
+                            return;
+                        } else {
+                            // 마지막 패널까지 봤으면 다음 섹션으로 스냅
+                            scrollToSection(currentIndex + 1);
+                            return;
+                        }
+                    } else {
+                        // 위로 스크롤
+                        if (cfg.index > 0) {
+                            setProjectActive(secId, cfg.index - 1); // 이전 패널
+                            return;
+                        } else {
+                            // 첫 패널에서 위로 → 이전 섹션으로 스냅
+                            scrollToSection(currentIndex - 1);
+                            return;
+                        }
+                    }
+                }
+
+                // 2) 그 외 섹션: 바로 다음/이전 섹션으로 스냅
+                scrollToSection(currentIndex + direction);
+            }
+
+            // ✅ 이것만 유지
+            window.snapObserver = Observer.create({
+                type: "wheel,touch,pointer",
+                wheelSpeed: 1,
+                tolerance: 25,
+                preventDefault: true,
+                allowClicks: true,
+                ignore: ".fancybox__container, .fancybox__slide, .fancybox__thumbs",
+                onDown() { handleStep(1); },
+                onUp() { handleStep(-1); },
+            });
+
+
+            // 첫 로드 시 현재 섹션 인덱스 정렬
+            window.addEventListener("load", () => {
+                const y = window.scrollY || window.pageYOffset;
+                let closest = 0;
+                let min = Infinity;
+                sections.forEach((sec, i) => {
+                    const diff = Math.abs(sec.offsetTop - y);
+                    if (diff < min) {
+                        min = diff;
+                        closest = i;
+                    }
+                });
+                currentIndex = closest;
+            });
+
+            //메인~클론 섹션 배경색 변경
+            ScrollTrigger.create({
+                trigger: "#main_project",
+                start: "top center",
+                endTrigger: "#clone_project",
+                end: "bottom center",
+                onEnter: () => gsap.to("body", { backgroundColor: "#363636", duration: 0.8 }),
+                onEnterBack: () => gsap.to("body", { backgroundColor: "#363636", duration: 0.8 }),
+                onLeave: () => gsap.to("body", { backgroundColor: "#fff", duration: 0.8 }),
+                onLeaveBack: () => gsap.to("body", { backgroundColor: "#fff", duration: 0.8 }),
+            });
+
+            // HOME 들어갈 때 숨기기
+            ScrollTrigger.create({
+                trigger: "#home",
+                start: "top center",
+                end: "bottom center",
+                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+            });
+
+            // INTRODUCE 들어가면 보이기
+            ScrollTrigger.create({
+                trigger: "#introduce",
+                start: "top center",
+                end: "bottom center",
+                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5 }),
+                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5 }),
+                onLeave: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+                onLeaveBack: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+            });
+
+            // ABOUT_ME ~ GRAPHIC_DESIGN 구간에서는 숨기기
+            ScrollTrigger.create({
+                trigger: "#about_me",
+                start: "top top",
+                endTrigger: "#graphic_design",
+                end: "bottom center",
+                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 0, duration: 0.5 }),
+            });
+
+            // CONTACT_ME 들어가면 보이기
+            ScrollTrigger.create({
+                trigger: "#contact_me",
+                start: "top center",
+                end: "bottom center",
+                onEnter: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5 }),
+                onEnterBack: () => gsap.to(".paw-bg", { autoAlpha: 1, duration: 0.5 }),
+            });
+
+            //메인비주얼 툴팁
+            const tooltip = document.getElementById("cursor-tooltip");
+
+            // 툴팁이 적용될 모든 요소 선택
+            const tooltipTargets = document.querySelectorAll(
+                ".folder-item.folder-black, .folder-item.folder-gray, .image_icon"
+            );
+
+            tooltipTargets.forEach(el => {
+                el.addEventListener("mouseenter", () => {
+                    const text = el.getAttribute("data-tooltip");
+                    if (!text) return;
+                    tooltip.textContent = text;
+                    tooltip.classList.add("is-show");
+                });
+
+                el.addEventListener("mousemove", (e) => {
+                    tooltip.style.left = e.clientX + 16 + "px";
+                    tooltip.style.top = e.clientY + 16 + "px";
+                });
+
+                el.addEventListener("mouseleave", () => {
+                    tooltip.classList.remove("is-show");
+                });
+            });
+
+            // 스냅 마지막 섹션 재동기화
+            ScrollTrigger.refresh(true);
+
+        });
+    </script>
+
+</head>
+
+<body>
+    <div id="cursor-tooltip" class="cursor-tooltip"></div>
+
+    <!-- paw sprite -->
+    <svg id="svg-sprite" style="position: absolute; width: 0; height: 0; visibility: hidden;">
+        <symbol id="paw-left" viewBox="0 0 100 100">
+            <image href="img/left_foot.svg" x="0" y="0" width="100" height="100" />
+        </symbol>
+        <symbol id="paw-right" viewBox="0 0 100 100">
+            <image href="img/right_foot.svg" x="0" y="0" width="100" height="100" />
+        </symbol>
+    </svg>
+
+    <div id="wrap">
+        <header class="header">
+            <div class="inner">
+                <div class="top_title">
+                    JIEUN/PORTFOLIO
+                </div><!-- .top_title end -->
+
+                <nav class="nav">
+                    <ul class="gnb">
+                        <li class="active"><a href="#home">HOME</a></li>
+                        <li><a href="#about_me">ABOUT ME</a></li>
+                        <li><a href="#main_project">MAIN PROJECT</a></li>
+                        <li><a href="#clone_project">CLONE PROJECT</a></li>
+                        <li><a href="#graphic_design">GRAPHIC DESIGN</a></li>
+                        <li><a href="#contact_me">CONTACT ME</a></li>
+                    </ul><!-- .gnb end -->
+                </nav><!-- .nav end -->
+
+                <div class="icons">
+                    <img src="img/icon-sidebar.svg" alt="">
+                    <div class="arrow">
+                        <img src="img/icon-left-arrow.svg" alt="">
+                        <img src="img/icon-right-arrow.svg" alt="">
+                    </div><!-- .arrow end -->
+                </div><!-- .icons end -->
+            </div><!-- .inner end -->
+        </header><!-- .header end -->
+
+        <main class="main">
+            <section id="home" class="home" data-snap>
+                <div class="bunny-visual">
+                    <img src="img/main_bunny.svg" alt="bunny" class="bunny-body">
+
+                    <svg class="bunny-eyes" viewBox="0 0 1000 1000">
+                        <g id="left-eye">
+                            <circle cx="400" cy="520" r="70" fill="#ffffff" />
+                            <circle class="pupil" cx="400" cy="520" r="40" fill="#141414" />
+                            <circle class="highlight" cx="385" cy="505" r="15" fill="#ffffff" />
+                        </g>
+
+                        <g id="right-eye">
+                            <circle cx="600" cy="520" r="70" fill="#ffffff" />
+                            <circle class="pupil" cx="600" cy="520" r="40" fill="#141414" />
+                            <circle class="highlight" cx="585" cy="505" r="15" fill="#ffffff" />
+                        </g>
+                    </svg><!-- .bunny-eyes end -->
+                </div><!-- .bunny-visual end -->
+
+                <div class="folder-icons">
+                    <div class="folder-item folder-black" data-tooltip="Click & Drag" style="left: 3%; top: 39%;">
+                        <input type="checkbox" id="folder-main" class="folder-toggle">
+                        <label class="folder-label" for="folder-main">
+                            <div class="folder-icon"></div>
+                        </label>
+                        <div class="folder-name">GRAPHIC DESIGN</div>
+                    </div><!-- .folder-item end -->
+
+                    <div class="folder-item folder-black" data-tooltip="Click & Drag" style="left: 79%; top: 16%;">
+                        <input type="checkbox" id="folder-about" class="folder-toggle">
+                        <label class="folder-label" for="folder-about">
+                            <div class="folder-icon"></div>
+                        </label>
+                        <div class="folder-name">WEB DESIGN</div>
+                    </div><!-- .folder-item end -->
+
+                    <div class="folder-item folder-black" data-tooltip="Click & Drag" style="right: 14%; top: 59%;">
+                        <input type="checkbox" id="folder-resume" class="folder-toggle">
+                        <label class="folder-label" for="folder-resume">
+                            <div class="folder-icon"></div>
+                        </label>
+                        <div class="folder-name">WEB PUBLISHING</div>
+                    </div><!-- .folder-item end -->
+
+                    <div class="folder-item folder-gray" data-tooltip="Click & Drag" style="left: 15%; top: 60%;">
+                        <input type="checkbox" id="folder-life" class="folder-toggle">
+                        <label class="folder-label" for="folder-life">
+                            <div class="folder-icon"></div>
+                        </label>
+                        <div class="folder-name">HTML</div>
+                    </div><!-- .folder-item end -->
+
+                    <div class="folder-item folder-gray" data-tooltip="Click & Drag" style="right: 5%; top: 42%;">
+                        <input type="checkbox" id="folder-fulfill" class="folder-toggle">
+                        <label class="folder-label" for="folder-fulfill">
+                            <div class="folder-icon"></div>
+                        </label>
+                        <div class="folder-name">UI/UX</div>
+                    </div><!-- .folder-item end -->
+
+                    <div class="image_icon" data-tooltip="Drag" style="left: 18%; top: 24%;">
+                        <img src="img/LIFE-LIKE.png" alt="LIFE LIKE">
+                        <div class="image_name">LIFE-LIKE</div>
+                    </div><!-- .image_icon end -->
+
+                    <div class="image_icon" data-tooltip="Drag" style="left: 48%; top: 12%;">
+                        <img src="img/fulfillment.png" alt="FULFILLMENT">
+                        <div class="image_name">FULFILLMENT</div>
+                    </div><!-- .image_icon end -->
+
+                    <div class="image_icon" data-tooltip="Drag" style="left: 57%; top: 26%;">
+                        <img src="img/growth.png" alt="GROWTH">
+                        <div class="image_name">GROWTH</div>
+                    </div><!-- .image_icon end -->
+
+                    <div class="image_icon" data-tooltip="Drag" style="left: 12%; top: 14%;">
+                        <img src="img/IDEA.png" alt="IDEA">
+                        <div class="image_name">IDEA</div>
+                    </div><!-- .image_icon end -->
+                </div><!-- .folder-icons end -->
+            </section><!-- #home.home end -->
+
+            <section id="introduce" class="introduce" data-snap>
+                <div class="introduce-inner">
+                    <div class="about">
+                        <div class="about-text" split-lines>
+                            호기심 많은 토끼처럼
+                            <span class="about-hover about-hover-left">
+                                <span class="about-img">
+                                    <img src="img/bunny-gray-01.gif" alt="bunny detail">
+                                </span>
+                                <span class="about-text-inner">섬세하고</span>
+                            </span>
+                            <br>
+                            <span class="about-hover about-hover-right">
+                                <span class="about-text-inner">생동감 있는</span>
+                                <span class="about-img">
+                                    <img src="img/bunny-gray-02.gif" alt="bunny motion">
+                                </span>
+                            </span>
+                            웹을 만들어가는<br>
+                            신입 웹 퍼블리셔 &amp; 웹 디자이너 이지은입니다.
+                        </div>
+
+
+                        <div class="about-down">
+                            <img src="img/icon-right-arrow.svg" alt="scroll arrow">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="about_me" class="about-me" data-snap>
+                <div class="about-me-inner">
+                    <div class="about-me-title">
+                        <h2>ABOUT ME</h2>
+                    </div>
+                    <!-- LEFT: PROFILE -->
+                    <div class="about-me-wrap">
+                        <div class="about-profile">
+                            <div class="profile-photo">
+                                <img src="img/profile.jpg" alt="">
+                            </div>
+
+                            <div class="profile-info">
+                                <h3 class="profile-name">이지은 <span>JI EUN LEE</span></h3>
+                                <ul class="profile-meta">
+                                    <li>
+                                        <p>1999.11.14</p>
+                                        <img src="img/logo.svg" alt="">
+                                    </li>
+                                    <li>010-2562-0889</li>
+                                    <li><a href="mailto:luvwhatyouhave@naver.com">luvwhatyouhave@naver.com</a></li>
+                                </ul>
+                            </div>
+
+                            <a href="pdf/resume.pdf" download="이지은_입사지원서.pdf" class="btn-profile-pdf">
+                                <p>입사지원서 PDF 다운로드</p>
+                                <img src="img/down-arrow.svg" alt="">
+                            </a>
+                        </div>
+
+                        <!-- RIGHT: CONTENT -->
+                        <div class="about-content">
+                            <div class="about-col">
+                                <h3 class="sec-title">CERTIFICATE</h3>
+                                <ul class="info-list">
+                                    <li><span class="label">컴퓨터그래픽스운용기능사</span><span class="date">2023.04</span></li>
+                                    <li><span class="label">GTQ일러스트 1급</span><span class="date">2022.03</span></li>
+                                    <li><span class="label">GTQ그래픽기술자격 1급</span><span class="date">2021.03</span></li>
+                                    <li><span class="label">컴퓨터활용능력 1급</span><span class="date">2024.07</span></li>
+                                    <li><span class="label">보육교사 2급</span><span class="date">2023.02</span></li>
+                                    <li><span class="label">사진기능사</span><span class="date">2022.09</span></li>
+                                    <li><span class="label">자동차운전면허 2종 보통</span><span class="date">2020.08</span></li>
+                                </ul>
+                            </div>
+
+                            <div class="about-col">
+                                <h3 class="sec-title">EDUCATION</h3>
+                                <ul class="info-list">
+                                    <li><span class="label">[디지털 디자인] 트렌디한 UI/UX반응형 웹제작을 위한<br />
+                                            웹퍼블리셔(디자인&코딩)프론트엔드 과정</span><span class="date">2025.11</span></li>
+                                    <li><span class="label">OO대학교 OO학과 졸업</span><span class="date">2021.02</span></li>
+                                    <li><span class="label">OO OO고등학교 졸업</span><span class="date">2018.02</span></li>
+                                </ul>
+                            </div>
+
+                            <div class="about-col">
+                                <h3 class="sec-title">AWARD</h3>
+                                <ul class="info-list">
+                                    <li><span class="label">2021 경남콘텐츠코리아랩 콘텐츠 창업 아이디어 해커톤 우수상</span><span
+                                            class="date">2021.08</span></li>
+                                    <li><span class="label">제44회 경상남도 미술대전 특선 수상</span><span class="date">2020.10</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="about-skill-icons">
+                                <div class="skill-icon" data-tooltip="Photoshop으로 이미지 보정 및 UI 디자인이 가능합니다."><img
+                                        src="img/photoshop.svg"></div>
+                                <div class="skill-icon" data-tooltip="Illustrator로 로고 및 아이콘 디자인이 가능합니다."><img
+                                        src="img/ai.svg"></div>
+                                <div class="skill-icon" data-tooltip="Figma로 UI설계와 프로토타입을 제작할 수 있습니다."><img
+                                        src="img/figma.svg"></div>
+                                <div class="skill-icon" data-tooltip="Visual Studio Code로 효율적인 웹 개발이 가능합니다."><img
+                                        src="img/visual.svg">
+                                </div>
+                                <div class="skill-icon" data-tooltip="GitHub를 통한 버전관리와 협업이 가능합니다."><img
+                                        src="img/github.svg"></div>
+                                <div class="skill-icon" data-tooltip="HTML5 마크업 구조를 잘 이해하고 작성할 수 있습니다."><img
+                                        src="img/html.svg"></div>
+                                <div class="skill-icon" data-tooltip="CSS3로 반응형 웹사이트 스타일링이 가능합니다."><img
+                                        src="img/css.svg"></div>
+                                <div class="skill-icon" data-tooltip="JavaScript로 웹페이지에 인터렉션 기능을 추가할 수 있습니다."><img
+                                        src="img/javascript.svg"></div>
+                                <div class="skill-icon" data-tooltip="간단한 DOM 조작과 애니메이션을 구현할 수 있습니다."><img
+                                        src="img/jquery.svg"></div>
+                                <div class="skill-icon" data-tooltip="SCSS를 활용해 유지보수성이 높은 스타일 구조를 설계할 수 있습니다."><img
+                                        src="img/scss.svg"></div>
+                                <div class="skill-icon" data-tooltip="PowerPoint로 기획서, 프로세스 페이지 제작이 가능합니다."><img
+                                        src="img/powerpoint.svg"></div>
+                                <div class="skill-icon" data-tooltip="Excel로 데이터 정리, 분석 통계 처리에 능숙합니다."><img
+                                        src="img/excel.svg"></div>
+                                <div class="skill-icon" data-tooltip="Access로 데이터베이스 구축 및 관리가 가능합니다."><img
+                                        src="img/access.svg"></div>
+                                <div class="skill-icon" data-tooltip="MiriCanvas 제작에 능숙합니다."><img src="img/miri.svg">
+                                </div>
+                                <div class="skill-icon" data-tooltip="Notion으로 문서 및 프로젝트 관리를 체계적으로 할 수 있습니다."><img
+                                        src="img/notion.svg"></div>
+                            </div>
+
+                        </div><!-- .about-content end -->
+                    </div>
+                </div><!-- .about-me-inner end -->
+            </section>
+
+            <section id="main_project" class="main-project">
+                <div class="main-project-inner">
+
+                    <!-- LEFT: 고정 리스트 -->
+                    <div class="project-sidebar">
+                        <div class="project-folder">
+                            <div class="project-folder-icon"><img src="img/Folder-black-open.svg" alt=""></div>
+                            <div class="project-folder-label">MAIN PROJECT</div>
+                        </div>
+
+                        <ul class="project-list">
+                            <li class="project-item is-active">COCA-COLA (KR)</li>
+                            <li class="project-item">알맹상점</li>
+                            <li class="project-item">S'WELL (KR)</li>
+                            <li class="project-item">AMUSE</li>
+                            <li class="project-item">MCDONALD (KR)</li>
+                        </ul>
+                    </div>
+
+                    <!-- RIGHT: 흰색 고정 박스 (안 내용만 교체) -->
+                    <div class="project-box">
+                        <div class="project-sidebar-title"><span>PROJECT /</span> MAIN PROJECT</div>
+                        <!-- 01 -->
+                        <div class="project-panel is-show">
+                            <div class="project-meta">
+                                <p class="project-label">WEB 01</p>
+                                <h2 class="project-title">COCA-COLA (KR)</h2>
+                                <p class="project-tag">#HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;#JAVASCRIPT&nbsp;&nbsp;#GSAP
+                                </p>
+                                <p class="project-desc-01">
+                                    세계적인 음료 브랜드 코카-콜라 컴퍼니의 국내 홈페이지를<br />
+                                    리디자인하여 WEB 전용 홈페이지로 제작하였습니다.
+                                </p>
+                                <p class="project-desc-02">
+                                    GSAP 기반의 스크롤 애니메이션과 다양한 인터랙션 효과를 활용해,<br />
+                                    코카콜라 브랜드의 ‘시원한 청량감’과 ‘역동적인 이미지’를<br />
+                                    동시에 경험할 수 있도록 설계했습니다.
+                                </p>
+                                <div class="project-info">
+                                    <ul class="info-title">
+                                        <li>제작 페이지</li>
+                                        <li>사용 프로그램</li>
+                                        <li>기여도</li>
+                                    </ul>
+                                    <ul class="info-detail">
+                                        <li>MAIN PAGE</li>
+                                        <li>FIGMA, VS CODE, PHOTOSHOP</li>
+                                        <li>기획·디자인·퍼블리싱 100%</li>
+                                    </ul>
+                                </div>
+                                <div class="project-buttons">
+                                    <a href="https://euntudio.github.io/coca-cola/" class="btn-project"
+                                        target="_blank">WEB SITE
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://github.com/euntudio/coca-cola.git" class="btn-project"
+                                        target="_blank">GITHUB
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="process/coca-cola-process.pdf" class="btn-project" target="_blank">PROCESS
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://www.figma.com/design/uLLkjNpYkSDauJ3O01bCfA/%EC%BD%94%EC%B9%B4%EC%BD%9C%EB%9D%BC-%EB%A6%AC%EB%89%B4%EC%96%BC?node-id=0-1&t=RVzvs6RpJLSzLwBg-1"
+                                        class="btn-project" target="_blank">FIGMA
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project-mockup multi-device">
+                                <!-- Desktop -->
+                                <div class="device device-desktop">
+                                    <img src="img/desktop.png" alt="Coca-Cola Desktop" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/desktop-coca.png" alt="Coca-Cola Desktop Design">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 02 -->
+                        <div class="project-panel">
+                            <div class="project-meta">
+                                <p class="project-label">WEB 02</p>
+                                <h2 class="project-title">알맹상점</h2>
+                                <p class="project-tag">
+                                    #HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;#JAVASCRIPT&nbsp;&nbsp;#SWIPER-JS</p>
+                                <p class="project-desc-01">
+                                    국내 최초 리필스테이션 알맹상점의 홈페이지를 리디자인하여<br />
+                                    반응형 웹으로 제작하였습니다.
+                                </p>
+                                <p class="project-desc-02">
+                                    ‘알맹이’를 중심으로 심플한 그래픽과 따뜻한 색감을 조합해,<br />
+                                    지속가능한 철학을 직관적으로 느낄 수 있도록 구성했습니다.
+                                </p>
+                                <div class="project-info">
+                                    <ul class="info-title">
+                                        <li>제작 페이지</li>
+                                        <li>사용 프로그램</li>
+                                        <li>기여도</li>
+                                    </ul>
+                                    <ul class="info-detail">
+                                        <li>MAIN PAGE</li>
+                                        <li>FIGMA, VS CODE, PHOTOSHOP</li>
+                                        <li>기획·디자인·퍼블리싱 100%</li>
+                                    </ul>
+                                </div>
+                                <div class="project-buttons">
+                                    <a href="https://euntudio.github.io/almang-store/" class="btn-project"
+                                        target="_blank">WEB SITE
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://github.com/euntudio/almang-store.git" class="btn-project"
+                                        target="_blank">GITHUB
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="process/almang-store-process.pdf" class="btn-project"
+                                        target="_blank">PROCESS
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://www.figma.com/design/lMHSJBxqykthUoSk1N2gLR/%EC%95%8C%EB%A7%B9%EC%83%81%EC%A0%90-%EB%A6%AC%EB%89%B4%EC%96%BC?node-id=0-1&t=fwKrBY8R5pDAO1Z2-1"
+                                        class="btn-project" target="_blank">FIGMA
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="#" class="btn-project" target="_blank" data-modal="qr">QR Code
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project-mockup multi-device">
+                                <!-- Desktop -->
+                                <div class="device device-desktop">
+                                    <img src="img/desktop.png" alt="Almang Desktop" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/desktop-almang.png" alt="Almang Desktop Design">
+                                    </div>
+                                </div>
+
+                                <!-- Tablet -->
+                                <div class="device device-tablet">
+                                    <img src="img/tablet.png" alt="Almang Tablet" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/tablet-almang.png" alt="Almang Tablet Design">
+                                    </div>
+                                </div>
+
+                                <!-- Mobile -->
+                                <div class="device device-mobile">
+                                    <img src="img/mobile.png" alt="Almang Mobile" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/mobile-almang.png" alt="Almang Mobile Design">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 03 -->
+                        <div class="project-panel">
+                            <div class="project-meta">
+                                <p class="project-label">WEB 03</p>
+                                <h2 class="project-title">S'WELL (KR)</h2>
+                                <p class="project-tag">
+                                    #HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;#JAVASCRIPT&nbsp;&nbsp;#SWIPER-JS</p>
+                                </p>
+                                <p class="project-desc-01">
+                                    프리미엄 보틀 브랜드 스웰의 국내 홈페이지를 리디자인하여<br />
+                                    WEB 전용 사이트로 제작하였습니다.
+                                </p>
+                                <p class="project-desc-02">
+                                    Swiper.js를 활용한 슬라이드 인터랙션과 스포티한 색상을 중심으로<br />
+                                    스웰코리아의 시원하고 프리미엄한 브랜드 무드를 더해 사용자가 지속가능한 가치와<br />
+                                    브랜드의 세련된 감성을 자연스럽게 경험하도록 설계했습니다.
+                                </p>
+                                <div class="project-info">
+                                    <ul class="info-title">
+                                        <li>제작 페이지</li>
+                                        <li>사용 프로그램</li>
+                                        <li>기여도</li>
+                                    </ul>
+                                    <ul class="info-detail">
+                                        <li>MAIN PAGE</li>
+                                        <li>FIGMA, VS CODE, PHOTOSHOP</li>
+                                        <li>기획·디자인·퍼블리싱 100%</li>
+                                    </ul>
+                                </div>
+                                <div class="project-buttons">
+                                    <a href="https://euntudio.github.io/Swell-Korea/" class="btn-project"
+                                        target="_blank">WEB SITE
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://github.com/euntudio/Swell-Korea.git" class="btn-project"
+                                        target="_blank">GITHUB
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="process/swell-korea-process.pdf" class="btn-project"
+                                        target="_blank">PROCESS
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://www.figma.com/design/Aq004L8qUpi75CiG6Xo9GL/%EC%8A%A4%EC%9B%B0%EC%BD%94%EB%A6%AC%EC%95%84-%EB%A6%AC%EB%94%94%EC%9E%90%EC%9D%B8-%EC%9D%B4%EC%A7%80%EC%9D%80?node-id=0-1&t=9GA2wj5tooJuQ63S-1"
+                                        class="btn-project" target="_blank">FIGMA
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project-mockup">
+                                <div class="monitor">
+                                    <img src="img/desktop.png" alt="">
+                                    <div class="monitor-screen">
+                                        <img src="img/desktop-swell.png" alt="Coca-Cola Main">
+                                    </div>
+                                    <div class="monitor-stand"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 04 -->
+                        <div class="project-panel">
+                            <div class="project-meta">
+                                <p class="project-label">APP 01</p>
+                                <h2 class="project-title">AMUSE</h2>
+                                <p class="project-tag">
+                                    #HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;#JAVASCRIPT&nbsp;&nbsp;#SWIPER-JS</p>
+                                <p class="project-desc-01">
+                                    비건&웰니스 라이프스타일 뷰티 브랜드 어뮤즈의 홈페이지를<br />
+                                    모바일 앱 형태로 리디자인하여 제작하였습니다.
+                                </p>
+                                <p class="project-desc-02">
+                                    밝고 사랑스러운 감성의 비주얼이 돋보이도록 콘텐츠와 색상을 배치했습니다.<br />
+                                    비주얼과 리뷰가 중요한 제품 특성을 고려하여<br />
+                                    사용자의 탐색이 용이하도록 설계했습니다.
+                                </p>
+                                <div class="project-info">
+                                    <ul class="info-title">
+                                        <li>제작 페이지</li>
+                                        <li>사용 프로그램</li>
+                                        <li>기여도</li>
+                                    </ul>
+                                    <ul class="info-detail">
+                                        <li>MAIN PAGE</li>
+                                        <li>FIGMA, VS CODE, PHOTOSHOP</li>
+                                        <li>기획·디자인·퍼블리싱 100%</li>
+                                    </ul>
+                                </div>
+                                <div class="project-buttons">
+                                    <a href="https://euntudio.github.io/amuse/" class="btn-project" target="_blank">WEB
+                                        SITE
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://github.com/euntudio/amuse.git" class="btn-project"
+                                        target="_blank">GITHUB
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="process/amuse-process.pdf" class="btn-project" target="_blank">PROCESS
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://www.figma.com/design/DZMJjhkW6DCr6gr2if08Eh/%EC%96%B4%EB%AE%A4%EC%A6%88?node-id=0-1&t=fULWih7luoc6toPW-1"
+                                        class="btn-project" target="_blank">FIGMA
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="#" class="btn-project" target="_blank" data-modal="qr">QR Code
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project-mockup amuse-mockup">
+                                <!-- 태블릿 목업 -->
+                                <div class="device device-tablet">
+                                    <img src="img/tablet.png" alt="Amuse Tablet Mockup" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/tablet-amuse.png" alt="Amuse Tablet Design">
+                                    </div>
+                                </div>
+
+                                <!-- 모바일 목업 -->
+                                <div class="device device-mobile">
+                                    <img src="img/mobile.png" alt="Amuse Mobile Mockup" class="device-frame">
+                                    <div class="device-screen">
+                                        <img src="img/mobile-amuse.png" alt="Amuse Mobile Design">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 05 -->
+                        <div class="project-panel">
+                            <div class="project-meta">
+                                <p class="project-label">APP 02</p>
+                                <h2 class="project-title">MCDONALD (KR)</h2>
+                                <p class="project-tag">
+                                    #HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;#JAVASCRIPT&nbsp;&nbsp;#SWIPER-JS</p>
+                                <p class="project-desc-01">
+                                    글로벌 패스트푸드 브랜드 맥도날드 앱을 리디자인하였습니다.
+                                </p>
+                                <p class="project-desc-02">
+                                    기존 앱의 외부 API 결제 방식을 인앱 결제 방식으로 변경해 UI 통일감을 주었습니다.<br />
+                                    제품 탐색을 돕는 제품 소개를 추가하거나 실제 결제 단계에서 겪는 불편함을<br />
+                                    개선하기 위한 목적으로 리디자인하였습니다.
+                                </p>
+                                <div class="project-info">
+                                    <ul class="info-title">
+                                        <li>제작 페이지</li>
+                                        <li>사용 프로그램</li>
+                                        <li>기여도</li>
+                                    </ul>
+                                    <ul class="info-detail">
+                                        <li>MAIN PAGE</li>
+                                        <li>FIGMA, VS CODE, PHOTOSHOP</li>
+                                        <li>기획·디자인 100%</li>
+                                    </ul>
+                                </div>
+                                <div class="project-buttons">
+
+                                    <a href="process/mcdonald_process.pdf" class="btn-project" target="_blank">PROCESS
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="#" class="btn-project" target="_blank" data-modal="learned">I LEARNED
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project-mockup mcdonald-mockup">
+                                <img src="img/mcdonald-01.png" alt="McDonald App Main" class="mcd-mockup-item">
+                                <img src="img/mcdonald-02.png" alt="McDonald App Coupon" class="mcd-mockup-item">
+                                <img src="img/mcdonald-03.png" alt="McDonald App Order" class="mcd-mockup-item">
+                                <img src="img/mcdonald-04.png" alt="McDonald App Detail" class="mcd-mockup-item">
+                            </div>
+                        </div>
+                    </div><!-- .project-box -->
+
+                </div><!-- .main-project-inner -->
+            </section>
+            <section id="clone_project" class="clone-project" data-snap>
+                <div class="clone-project-inner">
+
+                    <!-- LEFT: 고정 리스트 -->
+                    <div class="project-sidebar">
+                        <div class="project-folder">
+                            <div class="project-folder-icon"><img src="img/Folder-gray-open.svg" alt=""></div>
+                            <div class="project-folder-label">CLONE PROJECT</div>
+                        </div>
+
+                        <ul class="project-list">
+                            <li class="project-item is-active">SOCAR</li>
+                            <li class="project-item">INNOCEAN-S</li>
+                            <li class="project-item">MONEYTREE</li>
+                            <li class="project-item">오늘의집</li>
+                        </ul>
+                    </div>
+
+                    <!-- RIGHT: 흰색 고정 박스 (안 내용만 교체) -->
+                    <div class="project-box">
+                        <div class="project-sidebar-title"><span>PROJECT /</span> CLONE PROJECT</div>
+                        <!-- 01 -->
+                        <div class="project-panel is-show">
+                            <div class="project-meta">
+                                <p class="project-label">WEB 01</p>
+                                <h2 class="project-title">SOCAR</h2>
+                                <p class="project-tag">#HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;#JAVASCRIPT
+                                </p>
+                                <p class="project-desc-01">
+                                    국내 대표 카셰어링 플랫폼 쏘카의 반응형 홈페이지를 클론 코딩하여 제작했습니다.
+                                </p>
+                                <p class="project-desc-02">
+                                    쏘카 웹사이트를 클론 코딩하며 레이아웃과 인터랙션의 기본 구조를 직접 이해했습니다.<br />
+                                    display 속성과 position 속성을 활용해 요소의 정렬·배치 구조를 설계하는 법을 익혔고,<br />
+                                    자바스크립트를 통해 이미지가 슬라이드처럼 전환되는 동적 효과를 구현했습니다.
+                                </p>
+                                <div class="project-info">
+                                    <ul class="info-title">
+                                        <li>제작 페이지</li>
+                                        <li>사용 프로그램</li>
+                                        <li>기여도</li>
+                                    </ul>
+                                    <ul class="info-detail">
+                                        <li>MAIN PAGE</li>
+                                        <li>VS CODE</li>
+                                        <li>퍼블리싱 100%</li>
+                                    </ul>
+                                </div>
+                                <div class="project-buttons">
+                                    <a href="https://euntudio.github.io/socar/" class="btn-project" target="_blank">WEB
+                                        SITE
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://github.com/euntudio/socar.git" class="btn-project"
+                                        target="_blank">GITHUB
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project-mockup">
+                                <div class="monitor">
+                                    <img src="img/desktop.png" alt="">
+                                    <div class="monitor-screen">
+                                        <img src="img/desktop-socar.png" alt="Coca-Cola Main">
+                                    </div>
+                                    <div class="monitor-stand"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 02 -->
+                        <div class="project-panel">
+                            <div class="project-meta">
+                                <p class="project-label">WEB 02</p>
+                                <h2 class="project-title">INNOSEAN-S</h2>
+                                <p class="project-tag">
+                                    #HTML5&nbsp;&nbsp;#CSS3&nbsp;&nbsp;JAVASCRIPT</p>
+                                <p class="project-desc-01">
+                                    소셜 마케팅 에이전시 이노션에스의 홈페이지를 클론 코딩하여 제작했습니다.
+                                </p>
+                                <p class="project-desc-02">
+                                    이노션에스 웹사이트를 클론코딩하며 화면 해상도에 따라 필요한 컴포넌트만<br />
+                                    활성화하는 HTML 구조를 설계하고, 자바스크립트 내 active 클래스명 추가, 삭제와<br />
+                                    CSS의 position, transition 속성을 이용하여 햄버거 메뉴 애니메이션을 구현하는<br />
+                                    방식을 습득했습니다.
+                                </p>
+                                <div class="project-info">
+                                    <ul class="info-title">
+                                        <li>제작 페이지</li>
+                                        <li>사용 프로그램</li>
+                                        <li>기여도</li>
+                                    </ul>
+                                    <ul class="info-detail">
+                                        <li>MAIN PAGE</li>
+                                        <li>VS CODE</li>
+                                        <li>퍼블리싱 100%</li>
+                                    </ul>
+                                </div>
+                                <div class="project-buttons">
+                                    <a href="https://euntudio.github.io/innocean-s/" class="btn-project"
+                                        target="_blank">WEB SITE
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                    <a href="https://github.com/euntudio/innocean-s.git" class="btn-project"
+                                        target="_blank">GITHUB
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project-mockup">
+                                <div class="monitor">
+                                    <img src="img/desktop.png" alt="">
+                                    <div class="monitor-screen">
+                                        <img src="img/desktop-innocean-s.png" alt="Coca-Cola Main">
+                                    </div>
+                                    <div class="monitor-stand"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 03 -->
+                        <div class="project-panel">
+                            <div class="project-meta">
+                                <p class="project-label">WEB 03</p>
+                                <h2 class="project-title">MONEYTREE</h2>
+                                <p class="project-desc-01">
+                                    생활금융 플랫폼 머니트리의 홈페이지를 클론 디자인하였습니다.
+                                </p>
+                                <p class="project-desc-02">
+                                    머니트리 웹사이트를 클론 디자인하며 컴포넌트와 베리언트를 활용해 UI 구조의<br />
+                                    일관성과 재사용성을 높이는 방법을 익혔습니다. 또한 오토레이아웃을 설정할 때<br />
+                                    요소 간 우선순위를 고려해 그룹을 체계적으로 구성했습니다.<br />
+                                    그리고 가독성을 높이는 폰트 크기와 여백 설계의 중요성을 이해하게 되었습니다.
+                                </p>
+                                <div class="project-info">
+                                    <ul class="info-title">
+                                        <li>제작 페이지</li>
+                                        <li>사용 프로그램</li>
+                                        <li>기여도</li>
+                                    </ul>
+                                    <ul class="info-detail">
+                                        <li>MAIN PAGE</li>
+                                        <li>FIGMA</li>
+                                        <li>100%</li>
+                                    </ul>
+                                </div>
+                                <div class="project-buttons">
+                                    <a href="https://www.figma.com/design/woyAw4tVnyg1fr5tG1lmrj/%EB%A8%B8%EB%8B%88%ED%8A%B8%EB%A6%AC-%EC%97%B0%EC%8A%B5?node-id=0-1&t=q7XXSV8Xe2KeVL2y-1"
+                                        class="btn-project" target="_blank">FIGMA
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project-mockup">
+                                <div class="monitor">
+                                    <img src="img/desktop.png" alt="">
+                                    <div class="monitor-screen">
+                                        <img src="img/desktop-moneytree.png" alt="Coca-Cola Main">
+                                    </div>
+                                    <div class="monitor-stand"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 04 -->
+                        <div class="project-panel">
+                            <div class="project-meta">
+                                <p class="project-label">APP 01</p>
+                                <h2 class="project-title">오늘의 집</h2>
+                                <p class="project-desc-01">
+                                    국내 최대 규모의 인테리어·라이프스타일 플랫폼 오늘의 집의 앱을 참고하여<br />
+                                    클론 디자인하였습니다.
+                                </p>
+                                <p class="project-desc-02">
+                                    오늘의 집 앱 디자인을 참고하여 포토샵을 활용해 가독성 좋은 폰트 크기, 여백 픽셀을<br />
+                                    알아갈 수 있었고, 컴포넌트를 픽셀 단위로 오차 없이 디자인하였습니다.
+                                </p>
+                                <div class="project-info">
+                                    <ul class="info-title">
+                                        <li>제작 페이지</li>
+                                        <li>사용 프로그램</li>
+                                        <li>기여도</li>
+                                    </ul>
+                                    <ul class="info-detail">
+                                        <li>MAIN PAGE, SUB PAGE</li>
+                                        <li>PHOTOSHOP</li>
+                                        <li>100%</li>
+                                    </ul>
+                                </div>
+                                <div class="project-buttons">
+                                    <a href="#" class="btn-project">VIEW IN DETAIL
+                                        <img src="img/link-angled.svg" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project-mockup ohhouse-mockup">
+                                <img src="img/house-01.png" alt="" class="house-mockup-item">
+                                <img src="img/house-02.png" alt="" class="house-mockup-item">
+                                <img src="img/house-03.png" alt="" class="house-mockup-item">
+                                <img src="img/house-04.png" alt="" class="house-mockup-item">
+                            </div>
+                        </div>
+                    </div><!-- .project-box -->
+                </div><!-- #clone-project-inner -->
+            </section>
+
+            <section id="graphic_design" class="graphic_design" data-snap>
+                <div class="inner">
+                    <div class="graphic_title">
+                        <h2>GRAPHIC DESIGN</h2>
+                        <p>다양한 디자인 작업물을 만드는 것을 좋아합니다.<br />
+                            클릭하면 더 자세히 볼 수 있어요!</p>
+                    </div><!-- .graphic_title end -->
+                    <div class="cursor"></div>
+                    <div class="wrapper">
+                        <div class="project-list">
+                            <div class="project p-1">
+                                <div class="project-title">
+                                    <h1>Poster 01</h1>
+                                </div>
+                                <div class="project-categ">Illustrator</div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/Graphic-design-01.jpg" data-fancybox="project"
+                                        data-caption="Shape Of Love">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="project p-2">
+                                <div class="project-title">
+                                    <h1>Poster 02</h1>
+                                </div>
+                                <div class="project-categ">Illustrator</div>
+                                <div class="project-overlay">
+                                    <a href="img/Graphic-design-02.jpg" data-fancybox="project"
+                                        data-caption="Shape Of Love"></a>
+                                    <div style="display:none">
+                                        <a href="img/Graphic-design-03.jpg" data-fancybox="project"
+                                            data-caption="Shape Of Love"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="project p-3">
+                                <div class="project-title">
+                                    <h1>Poster 03</h1>
+                                </div>
+                                <div class="project-categ">Illustrator</div>
+                                <div class="project-overlay">
+                                    <a href="img/Graphic-design-04.jpg" data-fancybox="project"
+                                        data-caption="Shape Of Love"></a>
+                                    <div style="display:none">
+                                        <a href="img/Graphic-design-05.jpg" data-fancybox="project"
+                                            data-caption="Shape Of Love"></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project p-4">
+                                <div class="project-title">
+                                    <h1>Card News</h1>
+                                </div>
+                                <div class="project-categ">Illustrator</div>
+                                <div class="project-overlay">
+                                    <a href="img/cardnews-01.png" data-fancybox="project"
+                                        data-caption="진해서부소방서 명절 안전수칙"></a>
+                                    <div style="display:none">
+                                        <a href="img/cardnews-02.png" data-fancybox="project"
+                                            data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-03.png" data-fancybox="project"
+                                            data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-04.png" data-fancybox="project"
+                                            data-caption="진해서부소방서 명절 안전수칙"></a>
+                                        <a href="img/cardnews-05.png" data-fancybox="project"
+                                            data-caption="진해서부소방서 명절 안전수칙"></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="project p-5">
+                                <div class="project-title">
+                                    <h1>Event Banner 01</h1>
+                                </div>
+                                <div class="project-categ">Photoshop</div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/Graphic-design-06.jpg" data-fancybox="project" data-caption="영도 오토캠핑장">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project p-6">
+                                <div class="project-title">
+                                    <h1>Event Banner 02</h1>
+                                </div>
+                                <div class="project-categ">Photoshop</div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/Graphic-design-07.jpg" data-fancybox="project"
+                                        data-caption="테마파크 애견동반 펜션">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project p-7">
+                                <div class="project-title">
+                                    <h1>Event Banner 03</h1>
+                                </div>
+                                <div class="project-categ">Photoshop</div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/Graphic-design-08.jpg" data-fancybox="project"
+                                        data-caption="고등학교 입시 설명회">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="project p-8">
+                                <div class="project-title">
+                                    <h1>Detailed Page</h1>
+                                </div>
+                                <div class="project-categ">Photoshop</div>
+                                <div class="project-overlay">
+                                    <!-- 클릭 트리거 -->
+                                    <a href="img/detail_page.png" data-fancybox="project" data-caption="어뮤즈 상세페이지">
+                                        <!-- 썸네일이 안보여야 하니까 이미지태그는 생략 -->
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main><!-- .main end -->
+
+        <footer id="footer">
+            <section id="contact_me" class="contact_me" data-snap>
+                <div class="contact_title">
+                    <h2>CONTACT ME</h2>
+                </div><!-- ..contact_title end -->
+                <div class="info_wrap">
+                    <div class="contact_text">
+                        <ul class="text_wrap">
+                            <li>
+                                제 이메일은
+                                <div class="box">
+                                    <img src="img/icon-email.svg" alt="이메일주소">
+                                    <span class="email">luvwhatyouhave@naver.com</span>
+                                </div>
+                                입니다.
+                            </li>
+                            <li>
+                                입사지원서는
+                                <a href="pdf/resume.pdf" download="이지은_입사지원서.pdf" target="_blank">
+                                    <div class="box">
+                                        <img src="img/icon-look.svg" alt="입사지원서 pdf">
+                                        <span class="resume">여기서</span>
+                                    </div>
+                                </a>
+                                포트폴리오는
+                                <a href="pdf/portfolio.pdf" target="_blank">
+                                    <div class="box">
+                                        <img src="img/star-02.svg" alt="포트폴리오 pdf">
+                                        <span class="resume">여기서</span>
+                                    </div>
+                                </a>
+                                확인 가능합니다.
+                            </li>
+                            <li>
+                                깃허브를 방문은
+                                <a href="https://github.com/euntudio" target="_blank">
+                                    <div class="box">
+                                        <img src="img/star.svg" alt="깃허브 url">
+                                        <span class="email">이곳을</span>
+                                    </div>
+                                </a>
+                                클릭 해주세요!
+                            </li>
+                        </ul><!-- .text_wrap end -->
+                    </div><!-- .right end -->
+                    <div class="github-card">
+                        <input id="open" type="checkbox">
+                        <label class="open" for="open"></label>
+                        <div class="card-front">
+                            <div class="note">Click!</div>
+                        </div>
+                        <div class="card-inside">
+                            <div class="text-one">끝까지 봐주셔서 감사합니다.<br /> 배움을 멈추지 않고<br />꾸준히 성장하겠습니다.</div>
+                            <div class="qr-code"><img src="img/bunny-gray-02.gif" alt=""></div>
+                        </div>
+                    </div>
+                </div><!-- .info_wrap end -->
+                <div class="copyright">
+                    <p>본 사이트는 상업 목적이 아닌 개인 포트폴리오 사이트로 제작되었습니다. <br>일부 내용 및 폰트, 이미지 등은 해당 출처가 별도로 존재함을 밝힙니다.</p>
+                    <span>© 2025 JIEUN LEE. All rights reserved.</span>
+                </div><!-- .copyright end -->
+            </section>
+        </footer>
+
+        <div class="paw-bg">
+            <!-- 왼쪽에서 오른쪽으로 살짝 대각선 -->
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-left" />
+                </svg></div>
+            <div class="paw"><svg class="icon">
+                    <use href="#paw-right" />
+                </svg></div>
+        </div>
+    </div><!-- #wrap end -->
+
+    <div class="modal">
+        <div class="modal_popup">
+            <h3 class="modal_title">모달 제목</h3>
+            <p class="modal_text">모달 내용입니다.</p>
+            <button type="button" class="close_btn">닫기</button>
+        </div>
+    </div>
+    
+</body>
+
+</html>
