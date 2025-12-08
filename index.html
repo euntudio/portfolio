@@ -570,6 +570,28 @@
                 scrollToSection(currentIndex + direction);
             }
 
+            let stepState = {
+                dir: 0,   // 마지막 스크롤 방향 (1: 아래, -1: 위)
+                count: 0, // 같은 방향으로 몇 번 연속 스크롤했는지
+            };
+
+            function requestStep(direction) {
+                // 방향이 바뀌면 카운트 리셋
+                if (stepState.dir !== direction) {
+                    stepState.dir = direction;
+                    stepState.count = 0;
+                }
+
+                stepState.count++;
+
+                // ⚙️ 여기 숫자(2)를 늘리면 더 많이 스크롤해야 넘어감
+                if (stepState.count >= 1.5) {
+                    stepState.count = 0;
+                    handleStep(direction);
+                }
+            }
+
+
             // ✅ 이것만 유지
             window.snapObserver = Observer.create({
                 type: "wheel,touch,pointer",
@@ -578,8 +600,8 @@
                 preventDefault: true,
                 allowClicks: true,
                 ignore: ".fancybox__container, .fancybox__slide, .fancybox__thumbs",
-                onDown() { handleStep(1); },
-                onUp() { handleStep(-1); },
+                onDown() { requestStep(1); },
+                onUp() { requestStep(-1); },
             });
 
 
