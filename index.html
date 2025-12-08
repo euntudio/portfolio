@@ -769,6 +769,51 @@
                 }
             });
 
+            // QR Code 팝업
+            const $qrPopup = $("#qrcode-popup");
+            const $qrImgBox = $qrPopup.find(".modal-img");
+
+            // QR 버튼 클릭 시
+            $(".btn-qr").on("click", function (e) {
+                e.preventDefault(); // button이라 필수는 아니지만 혹시 모를 기본 동작 방지
+
+                const src = $(this).data("qr");
+                if (!src) return;
+
+                // 이미지 채워 넣기
+                $qrImgBox.html('<img src="' + src + '" alt="QR Code">');
+
+                // 팝업 보이기
+                $qrPopup.addClass("active");
+
+                // 스냅 스크롤 잠깐 멈추기
+                if (window.snapObserver && window.snapObserver.disable) {
+                    window.snapObserver.disable();
+                }
+            });
+
+            // 닫기 버튼 클릭 시
+            $qrPopup.find(".close-btn").on("click", function () {
+                $qrPopup.removeClass("active");
+                $qrImgBox.empty(); // 이미지 비우기
+
+                if (window.snapObserver && window.snapObserver.enable) {
+                    window.snapObserver.enable();
+                }
+            });
+
+            // 오버레이 배경 클릭해도 닫기
+            $qrPopup.on("click", function (e) {
+                if (e.target === this) {
+                    $qrPopup.removeClass("active");
+                    $qrImgBox.empty();
+
+                    if (window.snapObserver && window.snapObserver.enable) {
+                        window.snapObserver.enable();
+                    }
+                }
+            });
+
 
         });
     </script>
@@ -1101,7 +1146,6 @@
                                     </a>
                                     <button type="button" class="btn-project open-learned" data-modal="learned-coca">
                                         I LEARNED
-                                        <img src="img/link-angled.svg">
                                     </button>
 
                                 </div>
@@ -1163,10 +1207,10 @@
                                     </a>
                                     <button type="button" class="btn-project open-learned" data-modal="learned-almang">
                                         I LEARNED
-                                        <img src="img/link-angled.svg" alt="">
                                     </button>
-                                    <a href="#" class="btn-project" target="_blank" data-modal="qr">QR Code
-                                    </a>
+                                    <button type="button" class="btn-project btn-qr" data-qr="img/almang-store-qr.svg">
+                                        QR Code
+                                    </button>
                                 </div>
                             </div>
                             <div class="project-mockup multi-device">
@@ -1308,8 +1352,9 @@
                                         I LEARNED
                                         <img src="img/link-angled.svg" alt="">
                                     </button>
-                                    <a href="#" class="btn-project" target="_blank" data-modal="qr">QR Code
-                                    </a>
+                                    <button type="button" class="btn-project btn-qr" data-qr="img/amuse-qr.svg">
+                                        QR Code
+                                    </button>
                                 </div>
                             </div>
                             <div class="project-mockup amuse-mockup">
@@ -1865,7 +1910,15 @@
         </div>
     </div>
 
-
+    <!-- QR Code 팝업 -->
+    <div class="popup-overlay" id="qrcode-popup">
+        <div class="popup-content">
+            <h2 class="modal-title">QR Code</h2>
+            <div class="modal-img">
+            </div>
+            <button class="close-btn">닫기</button>
+        </div>
+    </div>
 
 </body>
 
