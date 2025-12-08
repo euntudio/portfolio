@@ -1041,6 +1041,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    cursor: pointer;
 }
 
 .project-panel.is-show .project-meta .project-buttons .btn-project:hover {
@@ -1994,6 +1995,7 @@ input#open {
     position: absolute;
     right: 10px;
     bottom: 10px;
+    cursor: pointer;
 }
 
 /* 로딩시 모달 팝업 */
@@ -2074,6 +2076,7 @@ input#open {
     background: transparent;
     color: #ffffff;
     transform: translateY(-1px);
+    cursor: pointer;
 }
 
 .intro-close-btn:active {
@@ -2091,6 +2094,7 @@ input#open {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 #qrcode-popup .modal-img img {
