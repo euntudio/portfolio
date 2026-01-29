@@ -117,7 +117,7 @@ body {
 .bunny-visual {
     position: relative;
     margin: 0 auto;
-    padding-top: 316px;
+    padding-top: 315px;
     width: 1015px;
 }
 
@@ -131,9 +131,9 @@ body {
 .bunny-eyes {
     position: absolute;
     left: 50%;
-    bottom: -520px;
+    bottom: -400px;
     transform: translateX(-50%);
-    width: 1380px;
+    width: 1150px;
     pointer-events: none;
 }
 
