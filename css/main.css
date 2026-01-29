@@ -131,7 +131,7 @@ body {
 .bunny-eyes {
     position: absolute;
     left: 50%;
-    bottom: -400px;
+    bottom: -395px;
     transform: translateX(-50%);
     width: 1150px;
     pointer-events: none;
