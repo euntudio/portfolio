@@ -73,14 +73,16 @@
                 });
 
                 function onFrame() {
-                    const ctm = svg.getScreenCTM();
-                    if (!ctm) {
-                        requestID = null;
-                        return;
-                    }
-                    const pt = mouse.matrixTransform(ctm.inverse());
+                    const rect = svg.getBoundingClientRect();
+
+                    const pt = {
+                        x: ((mouse.x - rect.left) / rect.width) * 1000,
+                        y: ((mouse.y - rect.top) / rect.height) * 1000
+                    };
+
                     if (leftEye) leftEye.rotateTo(pt);
                     if (rightEye) rightEye.rotateTo(pt);
+
                     requestID = null;
                 }
 
@@ -1021,9 +1023,9 @@
                                 </ul>
                             </div>
 
-                            <a href="pdf/resume.pdf" download="이지은_입사지원서.pdf" class="btn-profile-pdf">
-                                <p>입사지원서 PDF 다운로드</p>
-                                <img src="img/down-arrow.svg" alt="">
+                            <a href="pdf/resume.pdf" class="btn-profile-pdf" target="_blank">
+                                <p>입사지원서 PDF</p>
+                                <img src="img/search.svg" alt="">
                             </a>
                         </div>
 
@@ -1048,7 +1050,8 @@
                                 <ul class="info-list">
                                     <li><span class="label">[디지털 디자인] 트렌디한 UI/UX반응형 웹제작을 위한<br />
                                             웹퍼블리셔(디자인&코딩)프론트엔드 과정</span><span class="date">2025.11</span></li>
-                                    <li><span class="label">마산대학교 아동놀이방송심리학과 졸업</span><span class="date">2023.02</span></li>
+                                    <li><span class="label">마산대학교 아동놀이방송심리학과 졸업</span><span class="date">2023.02</span>
+                                    </li>
                                     <li><span class="label">창원 대산고등학교 졸업</span><span class="date">2018.02</span></li>
                                 </ul>
                             </div>
@@ -1644,10 +1647,10 @@
                                 </div>
                             </div>
                             <div class="project-mockup ohhouse-mockup">
-                                <img src="img/house-01.png" alt="" class="house-mockup-item">
-                                <img src="img/house-02.png" alt="" class="house-mockup-item">
-                                <img src="img/house-03.png" alt="" class="house-mockup-item">
-                                <img src="img/house-04.png" alt="" class="house-mockup-item">
+                                <img src="img/ohouse-01.png" alt="" class="house-mockup-item">
+                                <img src="img/ohouse-02.png" alt="" class="house-mockup-item">
+                                <img src="img/ohouse-03.png" alt="" class="house-mockup-item">
+                                <img src="img/ohouse-04.png" alt="" class="house-mockup-item">
                             </div>
                         </div>
                     </div><!-- .project-box -->
