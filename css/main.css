@@ -739,6 +739,7 @@ body {
     animation-duration: 2s;
     animation-duration: leaner;
 }
+
 .btn-profile-pdf img {
     width: 18px;
     color: #222;
@@ -1055,6 +1056,15 @@ body {
 
 .project-panel.is-show .project-meta .project-buttons .btn-project:active {
     background-color: #ddd;
+}
+
+.btn-detail::after {
+    content: "";
+    display: inline-block;
+    padding: 15px;
+    height: 16px;
+    margin-left: 8px;
+    background: url('../img/link-angled.svg') center/contain no-repeat;
 }
 
 .project-mockup {

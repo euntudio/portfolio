@@ -20,7 +20,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             //팬시박스
-            Fancybox.bind('[data-fancybox="project"]', {
+            Fancybox.bind('[data-fancybox]', {
                 Thumbs: { autoStart: true },     // 하단 썸네일 자동 표시
                 Toolbar: {
                     display: [
@@ -1430,7 +1430,7 @@
                                 </div>
                                 <div class="project-buttons">
 
-                                    <a href="process/mcdonald_process.pdf" class="btn-project" target="_blank">PROCESS
+                                    <a href="process/mcdonald-process.pdf" class="btn-project" target="_blank">PROCESS
                                         <img src="img/link-angled.svg" alt="">
                                     </a>
                                     <button type="button" class="btn-project open-learned"
@@ -1641,9 +1641,17 @@
                                     </ul>
                                 </div>
                                 <div class="project-buttons">
-                                    <a href="#" class="btn-project">VIEW IN DETAIL
-                                        <img src="img/link-angled.svg" alt="">
+
+                                    <a href="img/ohouse-01.png" data-fancybox="ohouse" class="btn-project btn-detail">
+                                        VIEW IN DETAIL
                                     </a>
+
+                                    <a href="img/ohouse-02.png" data-fancybox="ohouse" style="display:none;"></a>
+
+                                    <a href="img/ohouse-03.png" data-fancybox="ohouse" style="display:none;"></a>
+
+                                    <a href="img/ohouse-04.png" data-fancybox="ohouse" style="display:none;"></a>
+
                                 </div>
                             </div>
                             <div class="project-mockup ohhouse-mockup">
