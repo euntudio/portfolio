@@ -1650,10 +1650,55 @@ input#open {
 .text_wrap li .box:hover {
     background-color: #eee;
 }
+.text_wrap li:first-child .box:hover img {
+    background-image: url('../img/icon-email-full.svg'); /* 기본 PNG */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-image 0.2s ease; /* 이미지 바뀔 때 부드러운 효과 */
+    animation: jellyAnimation 0.6s both; /* 0.6초 동안 젤리 효과 실행 */
+}
+
+.text_wrap li a .box:hover img {
+    background-image: url('../img/icon-look-full.svg'); /* 기본 PNG */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-image 0.2s ease; /* 이미지 바뀔 때 부드러운 효과 */
+    animation: jellyAnimation 0.6s both; /* 0.6초 동안 젤리 효과 실행 */
+}
+
+.text_wrap li a:nth-child(2) .box:hover img {
+    background-image: url('../img/star-02-full.svg'); /* 기본 PNG */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-image 0.2s ease; /* 이미지 바뀔 때 부드러운 효과 */
+    animation: jellyAnimation 0.6s both; /* 0.6초 동안 젤리 효과 실행 */
+}
+
+.text_wrap li:last-child .box:hover img {
+    background-image: url('../img/star-full.svg'); /* 기본 PNG */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-image 0.2s ease; /* 이미지 바뀔 때 부드러운 효과 */
+    animation: jellyAnimation 0.6s both; /* 0.6초 동안 젤리 효과 실행 */
+}
 
 .text_wrap li .box:active {
     background-color: #ddd;
 }
+
+@keyframes jellyAnimation {
+    0% { transform: scale(1, 1); }
+    30% { transform: scale(1.25, 0.75); } /* 가로로 늘어나고 세로로 납작하게 */
+    40% { transform: scale(0.75, 1.25); } /* 세로로 길어지고 가로로 좁게 */
+    50% { transform: scale(1.15, 0.85); } /* 다시 가로로 조금 늘어남 */
+    65% { transform: scale(0.95, 1.05); } /* 다시 세로로 조금 늘어남 */
+    75% { transform: scale(1.05, 0.95); } /* 미세하게 요동 */
+    100% { transform: scale(1, 1); }     /* 원래 크기로 복귀 */
+  }
 
 .copyright {
     width: 100%;
