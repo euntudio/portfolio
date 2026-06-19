@@ -32,7 +32,8 @@ body {
     color: #363636;
     font-family: 'TT-Norms-Pro-Exp';
     font-weight: 900;
-    font-size: 140px;
+    font-size: clamp(60px, 7.2vw, 160px);
+    white-space: nowrap;
     position: relative;
     overflow: hidden;
     letter-spacing: 6px;
@@ -112,6 +113,10 @@ body {
     position: relative;
     display: flex;
     justify-content: center;
+}
+
+.main-visual {
+    width: 100%;
 }
 
 .bunny-visual {
